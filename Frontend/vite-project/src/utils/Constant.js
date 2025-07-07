@@ -1,9 +1,8 @@
-const isProduction = window.location.hostname !== "localhost";
+const LOCAL_API = 'http://localhost:5000/api';
+const PROD_API = 'https://attendance-app-wtil.onrender.com/api';
 
-const BASE_URL = isProduction
-  ? "https://your-attendance-backend.onrender.com"  // 🔁 Replace with your actual Render URL
-  : "http://localhost:5000";
+export const BASE_URL = import.meta.env.MODE === 'development' ? LOCAL_API : PROD_API;
 
-export const AUTH_API = `${BASE_URL}/api/auth`;
-export const ATTENDANCE_API = `${BASE_URL}/api/attendance`;
-export const LEAVE_API = `${BASE_URL}/api/leave`;
+export const AUTH_API = `${BASE_URL}/auth`;
+export const ATTENDANCE_API = `${BASE_URL}/attendance`;
+export const LEAVE_API = `${BASE_URL}/leave`;
