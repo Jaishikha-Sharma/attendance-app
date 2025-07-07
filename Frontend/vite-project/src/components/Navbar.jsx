@@ -55,9 +55,6 @@ const Navbar = () => {
             <a href="/employee-dashboard" className="nav-link">
               Dashboard
             </a>
-            <a href="/analytics" className="nav-link">
-              Analytics
-            </a>
             <a href="/profile" className="nav-link">
               Profile
             </a>
@@ -75,11 +72,8 @@ const Navbar = () => {
             <a href="/coordinator-dashboard" className="nav-link">
               Dashboard
             </a>
-            <a href="/team" className="nav-link">
-              Team
-            </a>
-            <a href="/tasks" className="nav-link">
-              Tasks
+            <a href="/profile" className="nav-link">
+              Profile
             </a>
           </>
         );

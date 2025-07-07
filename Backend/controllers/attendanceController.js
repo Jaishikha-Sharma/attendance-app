@@ -21,7 +21,7 @@ export const punchIn = async (req, res) => {
       return res.status(400).json({ message: 'Admin does not punch in' });
     }
 
-    // Rule 2: Freelancer
+    // Rule 2: Freelancer (only Sunday)
     if (user.role === 'Freelancer') {
       const day = now.getDay(); // Sunday = 0
       if (day !== 0) {
@@ -29,7 +29,7 @@ export const punchIn = async (req, res) => {
       }
     }
 
-    // Rule 3: Regular (Co-Admin, Employee)
+    // Rule 3: Regular (Co-Admin, Employee, HR) – 11:00 to 11:30 AM
     if (
       user.attendanceCriteria === 'Regular' ||
       user.role === 'Co-Admin' ||
@@ -46,7 +46,7 @@ export const punchIn = async (req, res) => {
       }
     }
 
-    // Rule 4: Project Coordinator
+    // Rule 4: Project Coordinator – 9:00 AM to 3:00 PM
     if (user.role === 'Project Coordinator') {
       const punchInStart = new Date(now);
       punchInStart.setHours(9, 0, 0, 0);
@@ -73,12 +73,13 @@ export const punchIn = async (req, res) => {
 
     await attendance.save();
 
-    res.status(200).json({ message: 'Punch in successful', attendance ,   punchInTime: attendance.punchInTime  });
+    res.status(200).json({ message: 'Punch in successful', attendance, punchInTime: attendance.punchInTime });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 // ===== PUNCH OUT CONTROLLER =====
 export const punchOut = async (req, res) => {

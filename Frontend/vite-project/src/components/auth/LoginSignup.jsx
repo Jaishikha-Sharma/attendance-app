@@ -51,6 +51,9 @@ const LoginSignup = () => {
         case "Co-Admin":
           navigate("/coordinator-dashboard");
           break;
+          case "Project Coordinator":
+          navigate("/coordinator-dashboard");
+          break;
         default:
           navigate("/");
       }
@@ -144,6 +147,7 @@ const LoginSignup = () => {
                   <option value="Employee">Employee</option>
                   <option value="HR">HR</option>
                   <option value="Freelancer">Freelancer</option>
+                    <option value="Project Coordinator">Project Coordinator</option>
                 </select>
                 <select
                   name="department"
