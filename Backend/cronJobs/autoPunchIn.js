@@ -2,18 +2,20 @@ import cron from 'node-cron';
 import Attendance from '../models/Attendance.js';
 import User from '../models/User.js';
 
+// ✅ CRON JOB: Runs at 11:31 AM, Mon–Sat
 const autoPunchInJob = cron.schedule('31 11 * * 1-6', async () => {
   const now = new Date();
   const today = now.toISOString().slice(0, 10);
 
-  console.log('⏰ Auto Punch-In job running at 11:31 AM');
+  console.log('⏰ Auto Punch-In job running at:', now.toLocaleTimeString());
 
-  // 🔸 Co-Admin & Employee (Regular Criteria)
+  // 🔸 Regular Users: Co-Admin, Employee, HR (ignore attendanceCriteria for now)
   const users = await User.find({
-    attendanceCriteria: 'Regular',
     isOnLeave: false,
-    role: { $in: ['Co-Admin', 'Employee'] }
+    role: { $in: ['Co-Admin', 'Employee', 'HR'] }
   });
+
+  console.log('🧑‍💼 Regular Users Found:', users.length);
 
   for (const user of users) {
     const existing = await Attendance.findOne({ userId: user._id, date: today });
@@ -32,11 +34,13 @@ const autoPunchInJob = cron.schedule('31 11 * * 1-6', async () => {
     }
   }
 
-  // 🔸 Freelancers (Monday–Saturday auto punch-in)
+  // 🔸 Freelancers (Mon–Sat auto punch-in)
   const freelancers = await User.find({
     role: 'Freelancer',
     isOnLeave: false
   });
+
+  console.log('🎨 Freelancers Found:', freelancers.length);
 
   for (const freelancer of freelancers) {
     const existing = await Attendance.findOne({ userId: freelancer._id, date: today });
