@@ -98,3 +98,49 @@ export const getHRSummary = async (req, res) => {
     res.status(500).json({ message: 'HR summary fetch failed' });
   }
 };
+// GET ALL LEAVES (For HR/Admin)
+export const getAllLeaves = async (req, res) => {
+  try {
+    const requester = await User.findById(req.user.id);
+    if (!requester || (requester.role !== 'HR' && requester.role !== 'Admin')) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const leaves = await Leave.find()
+      .populate('userId', 'name email role department')
+      .sort({ date: -1 });
+
+    res.status(200).json(leaves);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch leave requests' });
+  }
+};
+
+// UPDATE LEAVE STATUS (Approve or Reject)
+export const updateLeaveStatus = async (req, res) => {
+  try {
+    const requester = await User.findById(req.user.id);
+    if (!requester || (requester.role !== 'HR' && requester.role !== 'Admin')) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!['Approved', 'Rejected'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status. Use Approved or Rejected.' });
+    }
+
+    const leave = await Leave.findById(id);
+    if (!leave) return res.status(404).json({ message: 'Leave not found' });
+
+    leave.status = status;
+    await leave.save();
+
+    res.status(200).json({ message: `Leave ${status.toLowerCase()} successfully` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to update leave status' });
+  }
+};
