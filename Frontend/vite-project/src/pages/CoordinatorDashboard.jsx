@@ -6,4 +6,5 @@ const CoordinatorDashboard = () => {
   )
 }
 
+
 export default CoordinatorDashboard
