@@ -35,28 +35,17 @@ const LoginSignup = () => {
       setMessage(msg);
       setTimeout(() => setMessage(null), 2000);
 
-      switch (user.role) {
-        case "Admin":
-          navigate("/admin-dashboard");
-          break;
-        case "HR":
-          navigate("/hr-dashboard");
-          break;
-        case "Employee":
-          navigate("/employee-dashboard");
-          break;
-        case "Freelancer":
-          navigate("/freelancer-dashboard");
-          break;
-        case "Co-Admin":
-          navigate("/coordinator-dashboard");
-          break;
-          case "Project Coordinator":
-          navigate("/coordinator-dashboard");
-          break;
-        default:
-          navigate("/");
-      }
+      // 🔥 Role + Department Based Routing
+      if (user.role === "Admin") navigate("/admin-dashboard");
+      else if (user.role === "HR") navigate("/hr-dashboard");
+      else if (user.role === "Freelancer") navigate("/freelancer-dashboard");
+      else if (user.role === "Co-Admin" || user.role === "Project Coordinator")
+        navigate("/coordinator-dashboard");
+      else if (user.role === "Employee" && user.department === "Sales")
+        navigate("/sales-dashboard");
+      else if (user.role === "Employee")
+        navigate("/employee-dashboard");
+      else navigate("/");
     }
   }, [token, user]);
 
@@ -91,11 +80,10 @@ const LoginSignup = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
-      {/* Small App Heading */}
       <h1 className="text-2xl font-bold text-gray-800 mb-6">🕒 Attendance App</h1>
 
       <div className="flex flex-col md:flex-row bg-white shadow-lg rounded-2xl overflow-hidden w-full max-w-5xl">
-        {/* Left Info Section */}
+        {/* Left Info */}
         <div className="hidden md:flex w-1/2 items-center justify-center bg-gradient-to-br from-purple-100 to-indigo-100 p-8">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-indigo-800">
@@ -107,7 +95,7 @@ const LoginSignup = () => {
           </div>
         </div>
 
-        {/* Right Form Section */}
+        {/* Right Form */}
         <div className="w-full md:w-1/2 p-8">
           <h2 className="text-2xl font-semibold text-center text-gray-700 mb-5">
             {isLogin ? "Welcome Back!" : "Create Account"}
@@ -147,7 +135,7 @@ const LoginSignup = () => {
                   <option value="Employee">Employee</option>
                   <option value="HR">HR</option>
                   <option value="Freelancer">Freelancer</option>
-                    <option value="Project Coordinator">Project Coordinator</option>
+                  <option value="Project Coordinator">Project Coordinator</option>
                 </select>
                 <select
                   name="department"
@@ -160,9 +148,7 @@ const LoginSignup = () => {
                   <option value="HR">HR</option>
                   <option value="Finance">Finance</option>
                   <option value="Sales">Sales</option>
-                  <option value="Project Coordinator">
-                    Project Coordinator
-                  </option>
+                  <option value="Project Coordinator">Project Coordinator</option>
                   <option value="Developer">Developer</option>
                   <option value="Marketing">Marketing</option>
                   <option value="Design">Design</option>

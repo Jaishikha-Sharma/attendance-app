@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { LEAVE_API } from '../utils/Constant'; // ✅ Correct base URL
+import { LEAVE_API } from '../utils/Constant'; 
 
 // ✅ Async thunk to fetch HR summary data
 export const fetchHRSummary = createAsyncThunk(

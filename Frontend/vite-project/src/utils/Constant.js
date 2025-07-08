@@ -6,3 +6,4 @@ export const BASE_URL = import.meta.env.MODE === 'development' ? LOCAL_API : PRO
 export const AUTH_API = `${BASE_URL}/auth`;
 export const ATTENDANCE_API = `${BASE_URL}/attendance`;
 export const LEAVE_API = `${BASE_URL}/leave`;
+export const LEAD_API = `${BASE_URL}/leads`;

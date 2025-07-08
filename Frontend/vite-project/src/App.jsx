@@ -15,6 +15,7 @@ import CoordinatorDashboard from "./pages/CoordinatorDashboard";
 import Navbar from "./components/Navbar";
 import HRLeaveApproval from "./pages/HRLeaveApproval";
 import Profile from "./pages/Profile";
+import SalesDashboard from "./pages/SalesDashboard";
 
 function App() {
   // Layout wrapper with Navbar for dashboard routes only
@@ -43,6 +44,10 @@ function App() {
           <Route
             path="/coordinator-dashboard"
             element={<CoordinatorDashboard />}
+          />
+           <Route
+            path="/sales-dashboard"
+            element={<SalesDashboard />}
           />
           <Route path="/hr/leave-approval" element={<HRLeaveApproval />} />
           <Route path="/profile" element={<Profile />} />
