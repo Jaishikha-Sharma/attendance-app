@@ -5,7 +5,7 @@ import User from '../models/User.js';
 export const punchIn = async (req, res) => {
   try {
     const userId = req.user.id;
-    const now = new Date();
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
     const today = now.toISOString().slice(0, 10);
 
     const user = await User.findById(userId);
@@ -80,12 +80,11 @@ export const punchIn = async (req, res) => {
   }
 };
 
-
 // ===== PUNCH OUT CONTROLLER =====
 export const punchOut = async (req, res) => {
   try {
     const userId = req.user.id;
-    const now = new Date();
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
     const today = now.toISOString().slice(0, 10);
 
     const user = await User.findById(userId);
@@ -111,15 +110,15 @@ export const punchOut = async (req, res) => {
       return res.status(400).json({ message: 'Admin does not punch out' });
     }
 
-    // Rule: Regular (Co-Admin, Employee) - only after 7 PM
+    // Rule: Regular (Co-Admin, Employee, HR) - only after 7 PM
     if (
       user.attendanceCriteria === 'Regular' ||
       user.role === 'Co-Admin' ||
       user.role === 'Employee' ||
-        user.role === 'HR' 
+      user.role === 'HR'
     ) {
       const allowedPunchOut = new Date(now);
-      allowedPunchOut.setHours(19, 0, 0); // 7 PM
+      allowedPunchOut.setHours(19, 0, 0, 0); // 7 PM
       if (now < allowedPunchOut) {
         return res.status(400).json({ message: 'Punch out allowed only after 7 PM' });
       }
@@ -128,7 +127,7 @@ export const punchOut = async (req, res) => {
     // Rule: Project Coordinator - only after 9 PM
     if (user.role === 'Project Coordinator') {
       const allowedPunchOut = new Date(now);
-      allowedPunchOut.setHours(21, 0, 0); // 9 PM
+      allowedPunchOut.setHours(21, 0, 0, 0); // 9 PM
       if (now < allowedPunchOut) {
         return res.status(400).json({ message: 'Project Coordinators punch out only after 9 PM' });
       }
@@ -144,6 +143,7 @@ export const punchOut = async (req, res) => {
   }
 };
 
+// ===== GET MONTHLY ATTENDANCE SUMMARY =====
 export const getMonthlyAttendanceSummary = async (req, res) => {
   try {
     const requester = await User.findById(req.user.id);
@@ -210,7 +210,8 @@ export const getMonthlyAttendanceSummary = async (req, res) => {
 export const getTodayStatus = async (req, res) => {
   try {
     const userId = req.user.id;
-    const today = new Date().toISOString().slice(0, 10);
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    const today = now.toISOString().slice(0, 10);
 
     const attendance = await Attendance.findOne({ userId, date: today });
 
@@ -225,5 +226,16 @@ export const getTodayStatus = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to get today\'s status' });
+  }
+};
+export const getUserPunchHistory = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const history = await Attendance.find({ userId }).sort({ date: -1 });
+    res.status(200).json({ history });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to fetch attendance history' });
   }
 };
