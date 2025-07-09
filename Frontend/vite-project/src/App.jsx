@@ -16,6 +16,8 @@ import Navbar from "./components/Navbar";
 import HRLeaveApproval from "./pages/HRLeaveApproval";
 import Profile from "./pages/Profile";
 import SalesDashboard from "./pages/SalesDashboard";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   // Layout wrapper with Navbar for dashboard routes only
@@ -53,6 +55,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
+      <ToastContainer position="top-right" autoClose={3000} />
     </Router>
   );
 }

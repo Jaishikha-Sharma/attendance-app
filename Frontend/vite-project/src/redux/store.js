@@ -4,6 +4,7 @@ import authReducer from "./authSlice";
 import hrReducer from "./hrSlice";
 import leaveReducer from "./leaveSlice";
 import leadReducer from "./leadSlice";
+import orderReducer from "./orderSlice";
 
 const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ const store = configureStore({
     hr: hrReducer,
     leave: leaveReducer,
     lead: leadReducer,
+    order: orderReducer
   },
 });
 

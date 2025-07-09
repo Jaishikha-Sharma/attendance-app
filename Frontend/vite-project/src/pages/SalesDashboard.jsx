@@ -9,11 +9,13 @@ import {
   Menu,
   History,
   Briefcase,
+  ShoppingCart,
 } from "lucide-react";
 import axios from "axios";
 import { ATTENDANCE_API } from "../utils/Constant";
 import { applyLeave, clearLeaveMessages } from "../redux/leaveSlice";
 import SalesCRM from "../components/SalesCRM.jsx";
+import OrderForm from "../components/OrderForm.jsx";
 
 const SalesDashboard = () => {
   const { user, token } = useSelector((state) => state.auth);
@@ -142,6 +144,7 @@ const SalesDashboard = () => {
           <button onClick={() => setActiveTab("leave")} className={`w-full text-left px-3 py-2 rounded-md ${activeTab === "leave" ? "bg-indigo-900" : "hover:bg-indigo-600"}`}>Apply Leave</button>
           <button onClick={() => setActiveTab("history")} className={`w-full text-left px-3 py-2 rounded-md ${activeTab === "history" ? "bg-indigo-900" : "hover:bg-indigo-600"}`}>My History</button>
           <button onClick={() => setActiveTab("crm")} className={`w-full text-left px-3 py-2 rounded-md ${activeTab === "crm" ? "bg-indigo-900" : "hover:bg-indigo-600"}`}>CRM</button>
+          <button onClick={() => setActiveTab("order")} className={`w-full text-left px-3 py-2 rounded-md ${activeTab === "order" ? "bg-indigo-900" : "hover:bg-indigo-600"}`}>Order Form</button>
         </nav>
       </div>
 
@@ -226,8 +229,13 @@ const SalesDashboard = () => {
           </>
         )}
 
-       {activeTab === "crm" && <SalesCRM />}
+        {activeTab === "crm" && <SalesCRM />}
 
+        {activeTab === "order" && (
+          <>
+            <OrderForm />
+          </>
+        )}
 
         {(successMessage || error || message) && (
           <div className="mt-6 text-sm font-medium text-blue-600">

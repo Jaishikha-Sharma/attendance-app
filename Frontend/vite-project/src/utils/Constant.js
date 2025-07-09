@@ -7,3 +7,4 @@ export const AUTH_API = `${BASE_URL}/auth`;
 export const ATTENDANCE_API = `${BASE_URL}/attendance`;
 export const LEAVE_API = `${BASE_URL}/leave`;
 export const LEAD_API = `${BASE_URL}/leads`;
+export const ORDER_API = `${BASE_URL}/orders`;

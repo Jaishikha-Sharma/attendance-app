@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import attendanceRoutes from './routes/attendanceRoutes.js';
 import leaveRoutes from './routes/leaveRoutes.js';
 import leadRoutes from './routes/leadRoutes.js';
+import orderRoutes from "./routes/orderRoutes.js";
 
 // Cron job
 import autoPunchInJob from './cronJobs/autoPunchIn.js';
@@ -43,6 +44,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/leave', leaveRoutes);
 app.use('/api/leads', leadRoutes);
+app.use("/api/orders", orderRoutes);
 
 // MongoDB + server start
 mongoose.connect(process.env.MONGO_URI, {
