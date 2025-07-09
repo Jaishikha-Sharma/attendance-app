@@ -64,3 +64,25 @@ export const getLeadById = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// ✏️ Update Lead by ID
+export const updateLead = async (req, res) => {
+  try {
+    const leadId = req.params.id;
+
+    const updatedLead = await Lead.findByIdAndUpdate(
+      leadId,
+      { $set: req.body }, // Accept all fields including new ones
+      { new: true }
+    );
+
+    if (!updatedLead) {
+      return res.status(404).json({ message: 'Lead not found' });
+    }
+
+    res.status(200).json(updatedLead);
+  } catch (err) {
+    console.error("Update Lead Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};

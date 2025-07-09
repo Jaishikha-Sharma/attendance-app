@@ -20,7 +20,10 @@ const leadSchema = new mongoose.Schema({
   leadResponse: String,
   enquiryStatus: String,
   orderDate: Date,
-  orderValue: String
+  orderValue: String,
+   quotation: String,
+  response: String,
+  enquiry: String
 }, { timestamps: true });
 
 export default mongoose.model('Lead', leadSchema);
