@@ -129,11 +129,11 @@ const SalesCRM = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-       toast.success("Lead updated successfully!");
+      toast.success("Lead updated successfully!");
       setViewModalOpen(false);
       fetchLeads();
     } catch (err) {
-       toast.error("❌ Failed to update lead. Please try again.");
+      toast.error("❌ Failed to update lead. Please try again.");
       console.error("Failed to update lead:", err);
     }
   };
@@ -201,9 +201,9 @@ const SalesCRM = () => {
                   <td className="px-4 py-3">{lead.customerName}</td>
                   <td className="px-4 py-3">{lead.servicesRequired}</td>
                   <td className="px-4 py-3">{lead.customerContact}</td>
-                  <td className="px-4 py-3">{lead.quotation || "—"}</td>
+                  <td className="px-4 py-3">{lead.quotationStatus || "—"}</td>
                   <td className="px-4 py-3">{lead.response || "—"}</td>
-                  <td className="px-4 py-3">{lead.enquiry || "—"}</td>
+                  <td className="px-4 py-3">{lead.enquiryStatus || "—"}</td>
                 </tr>
               ))
             )}
@@ -511,6 +511,32 @@ const SalesCRM = () => {
                         <option value="close">Close</option>
                       </select>
                     </label>
+                    <label>
+                      Response
+                      <select
+                        className="input-style"
+                        value={extraForm.response}
+                        onChange={(e) =>
+                          setExtraForm({
+                            ...extraForm,
+                            response: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="">Choose Response</option>
+                        <option value="Pricing Issues">Pricing Issues</option>
+                        <option value="Time Issues">Time Issues</option>
+                        <option value="Distance Issues">Distance Issues</option>
+                        <option value="Payment Pending">Payment Pending</option>
+                        <option value="Details Awaited">Details Awaited</option>
+                        <option value="Project Cancelled">
+                          Project Cancelled
+                        </option>
+                        <option value="Junk Lead">Junk Lead</option>
+                        <option value="Other Reasons">Other Reasons</option>
+                        <option value="Order Placed">Order Placed</option>
+                      </select>
+                    </label>
 
                     <label>
                       Order Date
@@ -538,54 +564,6 @@ const SalesCRM = () => {
                           setExtraForm({
                             ...extraForm,
                             orderValue: e.target.value,
-                          })
-                        }
-                      />
-                    </label>
-
-                    <label>
-                      Quotation
-                      <input
-                        type="text"
-                        className="input-style"
-                        placeholder="Quotation"
-                        value={extraForm.quotation}
-                        onChange={(e) =>
-                          setExtraForm({
-                            ...extraForm,
-                            quotation: e.target.value,
-                          })
-                        }
-                      />
-                    </label>
-
-                    <label>
-                      Response
-                      <input
-                        type="text"
-                        className="input-style"
-                        placeholder="Response"
-                        value={extraForm.response}
-                        onChange={(e) =>
-                          setExtraForm({
-                            ...extraForm,
-                            response: e.target.value,
-                          })
-                        }
-                      />
-                    </label>
-
-                    <label>
-                      Enquiry
-                      <input
-                        type="text"
-                        className="input-style"
-                        placeholder="Enquiry"
-                        value={extraForm.enquiry}
-                        onChange={(e) =>
-                          setExtraForm({
-                            ...extraForm,
-                            enquiry: e.target.value,
                           })
                         }
                       />

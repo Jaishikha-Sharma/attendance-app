@@ -15,6 +15,10 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const goToDashboard = () => {
+    if (user?.role === "Employee" && user?.department === "Sales") {
+      navigate("/sales-dashboard");
+      return;
+    }
     switch (user?.role) {
       case "Admin":
         navigate("/admin-dashboard");
