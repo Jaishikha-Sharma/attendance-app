@@ -308,6 +308,7 @@ const SalesCRM = () => {
                   value={form.city}
                   onChange={(e) => setForm({ ...form, city: e.target.value })}
                   className="input-style"
+                  required
                 />
                 <input
                   type="text"
@@ -316,6 +317,7 @@ const SalesCRM = () => {
                   value={form.state}
                   onChange={(e) => setForm({ ...form, state: e.target.value })}
                   className="input-style"
+                  required
                 />
                 <input
                   type="text"
@@ -326,6 +328,7 @@ const SalesCRM = () => {
                     setForm({ ...form, servicesRequired: e.target.value })
                   }
                   className="input-style"
+                  required
                 />
                 <input
                   type="date"
@@ -335,6 +338,7 @@ const SalesCRM = () => {
                     setForm({ ...form, dueDate: e.target.value })
                   }
                   className="input-style"
+                  required
                 />
                 <textarea
                   name="description"

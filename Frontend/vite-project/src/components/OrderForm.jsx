@@ -199,7 +199,7 @@ const OrderForm = () => {
   const availableStates = countryStateData[form.country] || [];
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white rounded-xl shadow-lg  animate-fade-in text-sm">
+    <div className="max-w-5xl mx-auto p-6 bg-white rounded-xl shadow-lg animate-fade-in text-sm">
       <h2 className="text-2xl font-bold text-indigo-700 mb-6">
         New Order Form
       </h2>
@@ -208,20 +208,20 @@ const OrderForm = () => {
         className="grid grid-cols-1 md:grid-cols-2 gap-5"
       >
         {[
-          ["Order Date", "orderDate", "date"],
-          ["Customer Name", "customerName"],
-          ["Email", "customerEmail", "email"],
-          ["Address", "customerAddress"],
-          ["Contact No.", "contact"],
-          ["Project Topic", "topic"],
-          ["Institution", "institution"],
-          ["Selling Price", "sellingPrice", "number"],
-          ["Advance Paid", "advanceAmount", "number"],
-          ["Advance Mode (e.g. UPI, Cash)", "advanceMode"],
-        ].map(([label, name, type = "text"]) => (
+          ["Order Date", "orderDate", "date", true],
+          ["Customer Name", "customerName", "text", true],
+          ["Email", "customerEmail", "email", true],
+          ["Address", "customerAddress", "text", true],
+          ["Contact No.", "contact", "text", true],
+          ["Project Topic", "topic", "text", true],
+          ["Institution", "institution", "text", true],
+          ["Selling Price", "sellingPrice", "number", true],
+          ["Advance Paid", "advanceAmount", "number", true],
+          ["Advance Mode (e.g. UPI, Cash)", "advanceMode", "text", true],
+        ].map(([label, name, type = "text", required]) => (
           <div key={name}>
             <label className="text-xs text-gray-600 font-semibold mb-1 block">
-              {label}
+              {label} <span className="text-red-500">*</span>
             </label>
             <input
               type={type}
@@ -230,7 +230,7 @@ const OrderForm = () => {
               onChange={handleChange}
               placeholder={label}
               className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-400"
-              required={name === "orderDate" || name === "customerName"}
+              required={required}
             />
           </div>
         ))}
@@ -238,13 +238,14 @@ const OrderForm = () => {
         {/* Country Dropdown */}
         <div>
           <label className="text-xs text-gray-600 font-semibold mb-1 block">
-            Country
+            Country <span className="text-red-500">*</span>
           </label>
           <select
             name="country"
             value={form.country}
             onChange={handleChange}
             className="w-full border rounded-md px-3 py-2"
+            required
           >
             <option value="">Select Country</option>
             {countries.map((c) => (
@@ -278,13 +279,14 @@ const OrderForm = () => {
         {/* Lead Source */}
         <div>
           <label className="text-xs text-gray-600 font-semibold mb-1 block">
-            Lead Source
+            Lead Source <span className="text-red-500">*</span>
           </label>
           <select
             name="leadSource"
             value={form.leadSource}
             onChange={handleChange}
             className="w-full border rounded-md px-3 py-2"
+            required
           >
             <option value="">Select Source</option>
             <option value="social media">Social Media</option>
@@ -296,13 +298,14 @@ const OrderForm = () => {
         {/* Customer Type */}
         <div>
           <label className="text-xs text-gray-600 font-semibold mb-1 block">
-            Customer Type
+            Customer Type <span className="text-red-500">*</span>
           </label>
           <select
             name="customerType"
             value={form.customerType}
             onChange={handleChange}
             className="w-full border rounded-md px-3 py-2"
+            required
           >
             <option value="">Select Type</option>
             <option value="new">New</option>
@@ -313,7 +316,7 @@ const OrderForm = () => {
         {/* Deadline */}
         <div>
           <label className="text-xs text-gray-600 font-semibold mb-1 block">
-            Deadline
+            Deadline <span className="text-red-500">*</span>
           </label>
           <input
             type="date"
@@ -321,19 +324,21 @@ const OrderForm = () => {
             value={form.deadline}
             onChange={handleChange}
             className="w-full border rounded-md px-3 py-2"
+            required
           />
         </div>
 
         {/* Project Type */}
         <div>
           <label className="text-xs text-gray-600 font-semibold mb-1 block">
-            Project Type
+            Project Type <span className="text-red-500">*</span>
           </label>
           <select
             name="projectType"
             value={form.projectType}
             onChange={handleChange}
             className="w-full border rounded-md px-3 py-2"
+            required
           >
             <option value="">Select Type</option>
             <option value="handmade">Handmade</option>
@@ -346,13 +351,14 @@ const OrderForm = () => {
         {/* Purpose */}
         <div>
           <label className="text-xs text-gray-600 font-semibold mb-1 block">
-            Purpose
+            Purpose <span className="text-red-500">*</span>
           </label>
           <select
             name="purpose"
             value={form.purpose}
             onChange={handleChange}
             className="w-full border rounded-md px-3 py-2"
+            required
           >
             <option value="">Select Purpose</option>
             <option value="school">School</option>
@@ -364,7 +370,7 @@ const OrderForm = () => {
         {/* Notes */}
         <div className="md:col-span-2">
           <label className="text-xs text-gray-600 font-semibold mb-1 block">
-            Additional Notes
+            Additional Notes <span className="text-red-500">*</span>
           </label>
           <textarea
             name="notes"
@@ -373,11 +379,14 @@ const OrderForm = () => {
             rows="3"
             className="w-full border rounded-md px-3 py-2 resize-none"
             placeholder="Any additional information..."
+            required
           ></textarea>
         </div>
+
+        {/* Project Coordinator */}
         <div>
           <label className="text-xs text-gray-600 font-semibold mb-1 block">
-            Assign Project Coordinator
+            Assign Project Coordinator <span className="text-red-500">*</span>
           </label>
           <select
             name="projectCoordinator"
