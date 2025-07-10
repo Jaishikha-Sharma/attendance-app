@@ -90,21 +90,12 @@ const Navbar = () => {
           href="/"
           className="flex items-center gap-2 text-gray-900 font-bold text-lg"
         >
-          <div className="bg-indigo-500 text-white rounded-full p-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="w-6 h-6"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-            </svg>
-          </div>
-          <span>Attendance System</span>
+          <img
+            src="/pb.jpg"
+            alt="Logo"
+            className="w-10 h-10 rounded-full object-cover shadow ring-2 ring-indigo-300"
+          />
+          <span>PB Workspace</span>
         </a>
 
         {/* Hamburger */}
