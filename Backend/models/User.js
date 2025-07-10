@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
   department: {
     type: String,
     enum: [
-      "Project Coordination/Management",
+      "Project Coordinator",
       "Sales",
       "HR",
       "Finance",
