@@ -43,8 +43,7 @@ const LoginSignup = () => {
         navigate("/coordinator-dashboard");
       else if (user.role === "Employee" && user.department === "Sales")
         navigate("/sales-dashboard");
-      else if (user.role === "Employee")
-        navigate("/employee-dashboard");
+      else if (user.role === "Employee") navigate("/employee-dashboard");
       else navigate("/");
     }
   }, [token, user]);
@@ -80,7 +79,14 @@ const LoginSignup = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">🕒 Attendance App</h1>
+      <div className="flex items-center gap-3 mb-6">
+        <img
+          src="/pb.jpg"
+          alt="PB Logo"
+          className="w-10 h-10 rounded-full object-cover shadow ring-2 ring-indigo-300"
+        />
+        <h1 className="text-2xl font-bold text-gray-800">PB Workspace</h1>
+      </div>
 
       <div className="flex flex-col md:flex-row bg-white shadow-lg rounded-2xl overflow-hidden w-full max-w-5xl">
         {/* Left Info */}
@@ -101,7 +107,11 @@ const LoginSignup = () => {
             {isLogin ? "Welcome Back!" : "Create Account"}
           </h2>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-3"
+            noValidate
+          >
             {!isLogin && (
               <>
                 <input
@@ -135,7 +145,9 @@ const LoginSignup = () => {
                   <option value="Employee">Employee</option>
                   <option value="HR">HR</option>
                   <option value="Freelancer">Freelancer</option>
-                  <option value="Project Coordinator">Project Coordinator</option>
+                  <option value="Project Coordinator">
+                    Project Coordinator
+                  </option>
                 </select>
                 <select
                   name="department"
@@ -148,7 +160,9 @@ const LoginSignup = () => {
                   <option value="HR">HR</option>
                   <option value="Finance">Finance</option>
                   <option value="Sales">Sales</option>
-                  <option value="Project Coordinator">Project Coordinator</option>
+                  <option value="Project Coordinator">
+                    Project Coordinator
+                  </option>
                   <option value="Developer">Developer</option>
                   <option value="Marketing">Marketing</option>
                   <option value="Design">Design</option>
