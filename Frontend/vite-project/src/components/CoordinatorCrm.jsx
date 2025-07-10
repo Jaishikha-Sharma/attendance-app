@@ -4,7 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { X } from "lucide-react";
 import { fetchCoordinatorOrders } from "../redux/orderSlice";
 
-const CordinatorCrm = () => {
+const CoordinatorCrm = () => {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
   const {
@@ -243,4 +243,4 @@ const CordinatorCrm = () => {
   );
 };
 
-export default CordinatorCrm;
+export default CoordinatorCrm;

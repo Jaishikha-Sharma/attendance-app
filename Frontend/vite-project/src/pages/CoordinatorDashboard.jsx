@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 import { ATTENDANCE_API } from "../utils/Constant";
 import { applyLeave, clearLeaveMessages } from "../redux/leaveSlice";
-import CordinatorCrm from "../components/cordinatorCrm";
+import CoordinatorCrm from "../components/CoordinatorCrm.jsx";
 
 const CoordinatorDashboard = () => {
   const { user, token } = useSelector((state) => state.auth);
@@ -325,7 +325,7 @@ const CoordinatorDashboard = () => {
         )}
         {activeTab === "CRM" && (
           <>
-            <CordinatorCrm />
+            <CoordinatorCrm />
           </>
         )}
 
