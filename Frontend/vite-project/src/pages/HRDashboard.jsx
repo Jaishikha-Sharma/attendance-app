@@ -29,7 +29,14 @@ import {
 import axios from "axios";
 import { ATTENDANCE_API } from "../utils/Constant";
 
-const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7f7f", "#a3d3f1", "#f59e0b"];
+const COLORS = [
+  "#8884d8",
+  "#82ca9d",
+  "#ffc658",
+  "#ff7f7f",
+  "#a3d3f1",
+  "#f59e0b",
+];
 
 const StatCard = ({ title, value, Icon, color }) => (
   <div
@@ -60,21 +67,21 @@ const HRDashboard = () => {
   const [punchInTime, setPunchInTime] = useState(null);
   const [timer, setTimer] = useState("00:00:00");
   const [message, setMessage] = useState("");
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     dispatch(fetchHRSummary(token));
   }, [dispatch, token]);
   // Restore timer from localStorage if page reloads
-useEffect(() => {
-  const localPunchedIn = localStorage.getItem("isPunchedIn") === "true";
-  const localPunchInTime = localStorage.getItem("punchInTime");
+  useEffect(() => {
+    const localPunchedIn = localStorage.getItem("isPunchedIn") === "true";
+    const localPunchInTime = localStorage.getItem("punchInTime");
 
-  if (localPunchedIn && localPunchInTime) {
-    setIsPunchedIn(true);
-    setPunchInTime(new Date(localPunchInTime));
-  }
-}, []);
-
+    if (localPunchedIn && localPunchInTime) {
+      setIsPunchedIn(true);
+      setPunchInTime(new Date(localPunchInTime));
+    }
+  }, []);
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -177,26 +184,59 @@ useEffect(() => {
     <div className="min-h-screen flex flex-col sm:flex-row bg-gray-50">
       {/* Sidebar */}
       <div
-        className={`sm:w-64 w-full sm:block ${
-          showSidebar ? "" : "hidden"
-        } bg-indigo-700 text-white p-6 space-y-6 sm:min-h-screen shadow-lg`}
+        className={`sm:block w-full sm:min-h-screen shadow-lg bg-indigo-700 text-white p-6 space-y-6 transition-all duration-300 ease-in-out ${
+          collapsed ? "sm:w-20" : "sm:w-64"
+        } ${showSidebar ? "" : "hidden"}`}
       >
-        <div className="flex items-center justify-between sm:justify-start gap-2 text-xl font-bold">
-          <UserCheck className="w-6 h-6" />
-          <span>{user?.name}</span>
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xl font-bold">
+            <UserCheck className="w-6 h-6" />
+            {!collapsed && <span>{user?.name}</span>}
+          </div>
+
+          {/* Collapse Toggle */}
+          <button
+            className="text-white hover:text-indigo-300 sm:inline-block hidden"
+            onClick={() => setCollapsed(!collapsed)}
+          >
+            {collapsed ? (
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M10.293 14.707a1 1 0 010-1.414L12.586 11H4a1 1 0 110-2h8.586l-2.293-2.293a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M9.707 5.293a1 1 0 010 1.414L7.414 9H16a1 1 0 110 2H7.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            )}
+          </button>
         </div>
-        <p className="text-sm text-indigo-200">Role: {user?.role}</p>
+
+        {!collapsed && (
+          <p className="text-sm text-indigo-200">Role: {user?.role}</p>
+        )}
         <hr className="border-indigo-500" />
+
+        {/* Navigation */}
         <nav className="space-y-3">
           <button
             onClick={() => setActiveTab("dashboard")}
-            className={`w-full text-left px-3 py-2 rounded-md ${
+            className={`w-full flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200 ${
               activeTab === "dashboard"
                 ? "bg-indigo-900"
                 : "hover:bg-indigo-600"
             }`}
           >
-            Dashboard
+            <UserCheck className="w-5 h-5" />
+            {!collapsed && <span>Dashboard</span>}
           </button>
         </nav>
       </div>
@@ -227,7 +267,8 @@ useEffect(() => {
             </div>
           ) : user?.role === "Project Coordinator" ? (
             <div className="text-blue-600 font-semibold">
-              Project Coordinators punch in between 9AM–3PM, punch out after 9PM.
+              Project Coordinators punch in between 9AM–3PM, punch out after
+              9PM.
             </div>
           ) : (
             <div className="text-green-700 font-semibold">

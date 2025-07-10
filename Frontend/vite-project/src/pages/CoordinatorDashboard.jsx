@@ -19,6 +19,7 @@ const CoordinatorDashboard = () => {
   const { user, token } = useSelector((state) => state.auth);
   const { successMessage, error } = useSelector((state) => state.leave);
   const dispatch = useDispatch();
+  const [collapsed, setCollapsed] = useState(false);
 
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showSidebar, setShowSidebar] = useState(true);
@@ -139,51 +140,83 @@ const CoordinatorDashboard = () => {
     <div className="min-h-screen flex flex-col sm:flex-row bg-gray-100">
       {/* Sidebar */}
       <div
-        className={`sm:w-64 w-full sm:block ${
-          showSidebar ? "" : "hidden"
-        } bg-indigo-700 text-white p-6 space-y-6 sm:min-h-screen shadow-lg`}
+        className={`sm:block w-full sm:min-h-screen shadow-lg bg-indigo-700 text-white p-6 space-y-6 transition-all duration-300 ease-in-out ${
+          collapsed ? "sm:w-20" : "sm:w-64"
+        } ${showSidebar ? "" : "hidden"}`}
       >
-        <div className="flex items-center justify-between sm:justify-start gap-2 text-xl font-bold">
-          <UserCheck className="w-6 h-6" />
-          <span>{user?.name}</span>
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xl font-bold">
+            <UserCheck className="w-6 h-6" />
+            {!collapsed && <span>{user?.name}</span>}
+          </div>
+
+          {/* Collapse/Expand Toggle Button */}
+          <button
+            className="text-white hover:text-indigo-300 sm:inline-block hidden"
+            onClick={() => setCollapsed(!collapsed)}
+          >
+            {collapsed ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10.293 14.707a1 1 0 010-1.414L12.586 11H4a1 1 0 110-2h8.586l-2.293-2.293a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.707 5.293a1 1 0 010 1.414L7.414 9H16a1 1 0 110 2H7.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            )}
+          </button>
         </div>
-        <p className="text-sm text-indigo-200">Role: {user?.role}</p>
+
+        {!collapsed && (
+          <p className="text-sm text-indigo-200">Role: {user?.role}</p>
+        )}
         <hr className="border-indigo-500" />
+
+        {/* Nav buttons */}
         <nav className="space-y-3">
-          <button
-            onClick={() => setActiveTab("dashboard")}
-            className={`w-full text-left px-3 py-2 rounded-md ${
-              activeTab === "dashboard"
-                ? "bg-indigo-900"
-                : "hover:bg-indigo-600"
-            }`}
-          >
-            Dashboard
-          </button>
-          <button
-            onClick={() => setActiveTab("leave")}
-            className={`w-full text-left px-3 py-2 rounded-md ${
-              activeTab === "leave" ? "bg-indigo-900" : "hover:bg-indigo-600"
-            }`}
-          >
-            Apply Leave
-          </button>
-          <button
-            onClick={() => setActiveTab("history")}
-            className={`w-full text-left px-3 py-2 rounded-md ${
-              activeTab === "history" ? "bg-indigo-900" : "hover:bg-indigo-600"
-            }`}
-          >
-            My History
-          </button>
-          <button
-            onClick={() => setActiveTab("CRM")}
-            className={`w-full text-left px-3 py-2 rounded-md ${
-              activeTab === "CRM" ? "bg-indigo-900" : "hover:bg-indigo-600"
-            }`}
-          >
-            CRM
-          </button>
+          {[
+            { id: "dashboard", label: "Dashboard" },
+            { id: "leave", label: "Apply Leave" },
+            { id: "history", label: "My History" },
+            { id: "CRM", label: "CRM" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200 ${
+                activeTab === item.id
+                  ? "bg-indigo-900"
+                  : "hover:bg-indigo-600 text-white"
+              }`}
+            >
+              <span className="w-5 h-5">
+                {item.id === "dashboard" && <UserCheck />}
+                {item.id === "leave" && <CalendarCheck />}
+                {item.id === "history" && <History />}
+                {item.id === "CRM" && <Clock />}
+              </span>
+              {!collapsed && <span>{item.label}</span>}
+            </button>
+          ))}
         </nav>
       </div>
 
