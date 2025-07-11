@@ -40,6 +40,31 @@ export const assignVendor = createAsyncThunk(
     }
   }
 );
+export const updateDueAmount = createAsyncThunk(
+  "order/updateDueAmount",
+  async (
+    { orderId, dueAmount, paymentMode, paymentDate },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const { auth } = getState();
+      const res = await axios.patch(
+        `${ORDER_API}/${orderId}/update-due`,
+        { dueAmount, paymentMode, paymentDate },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      );
+      return res.data.order;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || "Failed to update due amount"
+      );
+    }
+  }
+);
 
 // 📥 Thunk to fetch all orders assigned to the coordinator
 export const fetchCoordinatorOrders = createAsyncThunk(
@@ -122,6 +147,21 @@ const orderSlice = createSlice({
         );
       })
       .addCase(assignVendor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateDueAmount.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateDueAmount.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.orders = state.orders.map((order) =>
+          order._id === action.payload._id ? action.payload : order
+        );
+      })
+      .addCase(updateDueAmount.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

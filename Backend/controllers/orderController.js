@@ -54,3 +54,25 @@ export const assignVendorToOrder = async (req, res) => {
     res.status(500).json({ message: "Failed to assign vendor" });
   }
 };
+export const updateDueAmount = async (req, res) => {
+  try {
+    const { dueAmount, paymentMode, paymentDate } = req.body;
+    const orderId = req.params.id;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.dueAmount = dueAmount;
+    order.duePaymentMode = paymentMode;
+    order.duePaymentDate = paymentDate;
+
+    await order.save();
+
+    res.status(200).json({ message: "Due amount updated successfully", order });
+  } catch (error) {
+    console.error("Error updating due amount:", error);
+    res.status(500).json({ message: "Failed to update due amount" });
+  }
+};

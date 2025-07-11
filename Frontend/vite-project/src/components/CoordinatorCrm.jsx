@@ -7,6 +7,8 @@ import { assignVendor } from "../redux/orderSlice";
 import { fetchFreelancers } from "../redux/freelancerSlice";
 import VendorDetailModal from "./VendorDetailModal";
 import AssignVendorModal from "./AssignVendorModal";
+import DuePaymentModal from "./DuePaymentModal";
+import { updateDueAmount } from "../redux/orderSlice";
 
 const CoordinatorCrm = () => {
   const dispatch = useDispatch();
@@ -24,6 +26,7 @@ const CoordinatorCrm = () => {
   const [vendorName, setVendorName] = useState("");
   const [selectedFreelancer, setSelectedFreelancer] = useState(null);
   const [showVendorDetailModal, setShowVendorDetailModal] = useState(false);
+  const [isDueModalOpen, setIsDueModalOpen] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -217,6 +220,16 @@ const CoordinatorCrm = () => {
                       <span className="font-medium">Payment Mode:</span>{" "}
                       {selectedOrder.advanceMode}
                     </p>
+                    <p className="flex items-center gap-2 mt-2">
+                      <span className="font-medium">Due Amount:</span> ₹
+                      {selectedOrder?.dueAmount ?? 0}
+                      <button
+                        onClick={() => setIsDueModalOpen(true)}
+                        className="text-indigo-600 hover:text-indigo-800"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                    </p>
                   </div>
 
                   {/* Status Info Card */}
@@ -275,6 +288,14 @@ const CoordinatorCrm = () => {
         isOpen={showVendorDetailModal}
         onClose={() => setShowVendorDetailModal(false)}
         freelancer={selectedFreelancer}
+      />
+      <DuePaymentModal
+        isOpen={isDueModalOpen}
+        onClose={() => setIsDueModalOpen(false)}
+        orderId={selectedOrder?._id}
+        currentDue={selectedOrder?.dueAmount}
+        dispatch={dispatch}
+        updateDueAmount={updateDueAmount}
       />
     </div>
   );

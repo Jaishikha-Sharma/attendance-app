@@ -23,7 +23,7 @@ const orderSchema = new mongoose.Schema(
     advanceAmount: Number,
     deliveryStatus: {
       type: String,
-      enum: ["UnDelivered", "Delivered" , "Pending"],
+      enum: ["UnDelivered", "Delivered", "Pending"],
       default: "Pending",
     },
 
@@ -42,6 +42,17 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    dueAmount: {
+      type: Number,
+      default: 0,
+    },
+    duePaymentMode: {
+      type: String,
+      default: "",
+    },
+    duePaymentDate: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
@@ -51,12 +62,12 @@ orderSchema.pre("save", async function (next) {
     const coordinator = await User.findById(this.projectCoordinator);
 
     if (coordinator && coordinator.name) {
-      const prefix = coordinator.name.slice(0, 3).toUpperCase(); 
+      const prefix = coordinator.name.slice(0, 3).toUpperCase();
       const count = await mongoose.model("Order").countDocuments({
         projectCoordinator: this.projectCoordinator,
       });
 
-      this.orderNo = `${prefix}1${1000 + count}`; 
+      this.orderNo = `${prefix}1${1000 + count}`;
     }
   }
 
