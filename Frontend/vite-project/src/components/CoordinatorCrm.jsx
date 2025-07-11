@@ -1,8 +1,10 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Dialog, Transition } from "@headlessui/react";
-import { X } from "lucide-react";
+import { X, Pencil } from "lucide-react";
 import { fetchCoordinatorOrders } from "../redux/orderSlice";
+import { assignVendor } from "../redux/orderSlice";
+import { fetchFreelancers } from "../redux/freelancerSlice";
 
 const CoordinatorCrm = () => {
   const dispatch = useDispatch();
@@ -12,13 +14,17 @@ const CoordinatorCrm = () => {
     loading,
     error,
   } = useSelector((state) => state.order || {});
+  const { list: freelancers } = useSelector((state) => state.freelancers);
 
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isViewModalOpen, setViewModalOpen] = useState(false);
+  const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
+  const [vendorName, setVendorName] = useState("");
 
   useEffect(() => {
     if (token) {
       dispatch(fetchCoordinatorOrders());
+      dispatch(fetchFreelancers(token));
     }
   }, [dispatch, token]);
 
@@ -214,10 +220,20 @@ const CoordinatorCrm = () => {
                     <h3 className="text-base font-semibold text-gray-900 mb-3 border-b pb-1">
                       Order Status
                     </h3>
-                    <p>
-                      <span className="font-medium">Vendor:</span>{" "}
+                    <p className="flex items-center gap-2">
+                      <span className="font-medium">Vendor:</span>
                       {selectedOrder.vendor || "N/A"}
+                      <button
+                        onClick={() => {
+                          setVendorName(selectedOrder.vendor || "");
+                          setIsVendorModalOpen(true);
+                        }}
+                        className="text-indigo-600 hover:text-indigo-800"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
                     </p>
+
                     <p>
                       <span className="font-medium">Status:</span>{" "}
                       <span
@@ -236,6 +252,59 @@ const CoordinatorCrm = () => {
                 </div>
               )}
             </Dialog.Panel>
+            <Transition appear show={isVendorModalOpen} as={Fragment}>
+              <Dialog
+                as="div"
+                className="relative z-50"
+                onClose={() => setIsVendorModalOpen(false)}
+              >
+                <div className="fixed inset-0 bg-black/30" />
+                <div className="fixed inset-0 flex items-center justify-center p-4">
+                  <Dialog.Panel className="bg-white rounded-xl p-6 shadow-xl max-w-sm w-full">
+                    <Dialog.Title className="text-lg font-semibold text-gray-800 mb-4">
+                      ✏️ Assign Vendor
+                    </Dialog.Title>
+                    <select
+                      value={vendorName}
+                      onChange={(e) => setVendorName(e.target.value)}
+                      className="w-full border rounded-lg px-4 py-2 mb-4 outline-indigo-500"
+                    >
+                      <option value="">Select a vendor</option>
+                      {freelancers.map((freelancer) => (
+                        <option key={freelancer._id} value={freelancer.name}>
+                          {freelancer.name} ({freelancer.email})
+                        </option>
+                      ))}
+                    </select>
+
+                    <div className="flex justify-end gap-3">
+                      <button
+                        onClick={() => setIsVendorModalOpen(false)}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (vendorName.trim()) {
+                            dispatch(
+                              assignVendor({
+                                orderId: selectedOrder._id,
+                                vendorName,
+                              })
+                            );
+                            setIsVendorModalOpen(false);
+                          }
+                        }}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </Dialog.Panel>
+                </div>
+              </Dialog>
+            </Transition>
           </div>
         </Dialog>
       </Transition>

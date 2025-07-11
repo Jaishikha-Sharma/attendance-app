@@ -19,6 +19,27 @@ export const createOrder = createAsyncThunk(
     }
   }
 );
+// ✏️ Assign vendor to order
+export const assignVendor = createAsyncThunk(
+  "order/assignVendor",
+  async ({ orderId, vendorName }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const res = await axios.patch(
+        `${ORDER_API}/${orderId}/assign-vendor`,
+        { vendor: vendorName },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      );
+      return res.data.order;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Vendor assignment failed");
+    }
+  }
+);
 
 // 📥 Thunk to fetch all orders assigned to the coordinator
 export const fetchCoordinatorOrders = createAsyncThunk(
@@ -84,6 +105,23 @@ const orderSlice = createSlice({
         state.orders = action.payload;
       })
       .addCase(fetchCoordinatorOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // ✏️ Assign vendor to order
+      .addCase(assignVendor.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(assignVendor.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        // Update vendor inside orders list
+        state.orders = state.orders.map((order) =>
+          order._id === action.payload._id ? action.payload : order
+        );
+      })
+      .addCase(assignVendor.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -35,3 +35,22 @@ export const getCoordinatorOrders = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch orders" });
   }
 };
+export const assignVendorToOrder = async (req, res) => {
+  try {
+    const { vendor } = req.body; // vendor will be a name or ID
+    const orderId = req.params.id;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.vendor = vendor; // Just updating vendor field
+    await order.save();
+
+    res.status(200).json({ message: "Vendor assigned successfully", order });
+  } catch (error) {
+    console.error("Error assigning vendor:", error);
+    res.status(500).json({ message: "Failed to assign vendor" });
+  }
+};

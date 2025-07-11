@@ -6,6 +6,7 @@ import leaveReducer from "./leaveSlice";
 import leadReducer from "./leadSlice";
 import orderReducer from "./orderSlice";
 import freelanceAttendanceReducer from "./freelanceAttendanceSlice";
+import freelancerReducer from "./freelancerSlice";
 
 const store = configureStore({
   reducer: {
@@ -14,7 +15,8 @@ const store = configureStore({
     leave: leaveReducer,
     lead: leadReducer,
     order: orderReducer,
-     freelancerAttendance: freelanceAttendanceReducer,
+    freelancerAttendance: freelanceAttendanceReducer,
+    freelancers: freelancerReducer,
   },
 });
 

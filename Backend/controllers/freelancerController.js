@@ -1,26 +1,28 @@
-import Freelancer from '../models/Freelancer.js';
+import User from '../models/User.js';
 
 export const createFreelancer = async (req, res) => {
   try {
     const {
-      employeeId, name, email, contactNo, state,
+      empId, name, email, password, // password should be hashed in real apps
+      contactNo, state,
       department, role, joiningDate, status,
       dob, address, stream, course
     } = req.body;
 
-    const existing = await Freelancer.findOne({ email });
+    const existing = await User.findOne({ email });
     if (existing) {
       return res.status(400).json({ message: "Freelancer already exists" });
     }
 
-    const freelancer = new Freelancer({
-      employeeId,
+    const freelancer = new User({
+      empId,
       name,
       email,
+      password,
+      role: role || "Freelancer",
       contactNo,
       state,
       department,
-      role,
       joiningDate,
       status,
       dob,
@@ -40,7 +42,7 @@ export const createFreelancer = async (req, res) => {
 
 export const getFreelancers = async (req, res) => {
   try {
-    const freelancers = await Freelancer.find().sort({ createdAt: -1 });
+    const freelancers = await User.find({ role: "Freelancer" }).sort({ createdAt: -1 });
     res.status(200).json(freelancers);
   } catch (error) {
     console.error(error);
