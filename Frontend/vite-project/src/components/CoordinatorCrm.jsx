@@ -9,6 +9,7 @@ import VendorDetailModal from "./VendorDetailModal";
 import AssignVendorModal from "./AssignVendorModal";
 import DuePaymentModal from "./DuePaymentModal";
 import { updateDueAmount } from "../redux/orderSlice";
+import { updateInstitution } from "../redux/orderSlice";
 
 const CoordinatorCrm = () => {
   const dispatch = useDispatch();
@@ -27,6 +28,8 @@ const CoordinatorCrm = () => {
   const [selectedFreelancer, setSelectedFreelancer] = useState(null);
   const [showVendorDetailModal, setShowVendorDetailModal] = useState(false);
   const [isDueModalOpen, setIsDueModalOpen] = useState(false);
+  const [isEditingInstitution, setIsEditingInstitution] = useState(false);
+  const [institutionInput, setInstitutionInput] = useState("");
 
   useEffect(() => {
     if (token) {
@@ -174,9 +177,55 @@ const CoordinatorCrm = () => {
                       <span className="font-medium">Address:</span>{" "}
                       {selectedOrder.customerAddress}
                     </p>
-                    <p>
-                      <span className="font-medium">Institution:</span>{" "}
-                      {selectedOrder.institution}
+                    <p className="flex items-center gap-2">
+                      <span className="font-medium">Institution:</span>
+                      {isEditingInstitution ? (
+                        <>
+                          <input
+                            type="text"
+                            value={institutionInput}
+                            onChange={(e) =>
+                              setInstitutionInput(e.target.value)
+                            }
+                            className="border px-2 py-1 rounded-md text-sm w-[160px]"
+                          />
+                          <button
+                            onClick={() => {
+                              dispatch(
+                                updateInstitution({
+                                  orderId: selectedOrder._id,
+                                  institution: institutionInput,
+                                })
+                              );
+                              setIsEditingInstitution(false);
+                            }}
+                            className="text-green-600 hover:text-green-800 text-xs"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setIsEditingInstitution(false)}
+                            className="text-gray-500 hover:text-gray-700 text-xs"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <span>{selectedOrder.institution || "N/A"}</span>
+                          <button
+                            onClick={() => {
+                              setInstitutionInput(
+                                selectedOrder.institution || ""
+                              );
+                              setIsEditingInstitution(true);
+                            }}
+                            className="text-indigo-600 hover:text-indigo-800"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
                     </p>
                   </div>
 

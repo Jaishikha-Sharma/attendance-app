@@ -76,3 +76,22 @@ export const updateDueAmount = async (req, res) => {
     res.status(500).json({ message: "Failed to update due amount" });
   }
 };
+export const updateInstitution = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { institution } = req.body;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.institution = institution;
+    await order.save();
+
+    res.status(200).json({ message: "Institution updated successfully", order });
+  } catch (error) {
+    console.error("Error updating institution:", error);
+    res.status(500).json({ message: "Failed to update institution" });
+  }
+};

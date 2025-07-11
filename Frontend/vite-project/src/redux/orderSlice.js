@@ -65,6 +65,28 @@ export const updateDueAmount = createAsyncThunk(
     }
   }
 );
+export const updateInstitution = createAsyncThunk(
+  "order/updateInstitution",
+  async ({ orderId, institution }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const res = await axios.put(
+      `${ORDER_API}/orders/${orderId}/institution`,
+        { institution },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      );
+      return res.data.order;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || "Failed to update institution"
+      );
+    }
+  }
+);
 
 // 📥 Thunk to fetch all orders assigned to the coordinator
 export const fetchCoordinatorOrders = createAsyncThunk(
@@ -162,6 +184,21 @@ const orderSlice = createSlice({
         );
       })
       .addCase(updateDueAmount.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateInstitution.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateInstitution.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.orders = state.orders.map((order) =>
+          order._id === action.payload._id ? action.payload : order
+        );
+      })
+      .addCase(updateInstitution.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
