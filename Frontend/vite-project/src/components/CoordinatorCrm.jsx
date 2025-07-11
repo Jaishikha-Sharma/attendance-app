@@ -1,10 +1,12 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Dialog, Transition } from "@headlessui/react";
-import { X, Pencil } from "lucide-react";
+import { X, Pencil, Eye } from "lucide-react";
 import { fetchCoordinatorOrders } from "../redux/orderSlice";
 import { assignVendor } from "../redux/orderSlice";
 import { fetchFreelancers } from "../redux/freelancerSlice";
+import VendorDetailModal from "./VendorDetailModal";
+import AssignVendorModal from "./AssignVendorModal";
 
 const CoordinatorCrm = () => {
   const dispatch = useDispatch();
@@ -20,6 +22,8 @@ const CoordinatorCrm = () => {
   const [isViewModalOpen, setViewModalOpen] = useState(false);
   const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
   const [vendorName, setVendorName] = useState("");
+  const [selectedFreelancer, setSelectedFreelancer] = useState(null);
+  const [showVendorDetailModal, setShowVendorDetailModal] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -252,62 +256,26 @@ const CoordinatorCrm = () => {
                 </div>
               )}
             </Dialog.Panel>
-            <Transition appear show={isVendorModalOpen} as={Fragment}>
-              <Dialog
-                as="div"
-                className="relative z-50"
-                onClose={() => setIsVendorModalOpen(false)}
-              >
-                <div className="fixed inset-0 bg-black/30" />
-                <div className="fixed inset-0 flex items-center justify-center p-4">
-                  <Dialog.Panel className="bg-white rounded-xl p-6 shadow-xl max-w-sm w-full">
-                    <Dialog.Title className="text-lg font-semibold text-gray-800 mb-4">
-                      ✏️ Assign Vendor
-                    </Dialog.Title>
-                    <select
-                      value={vendorName}
-                      onChange={(e) => setVendorName(e.target.value)}
-                      className="w-full border rounded-lg px-4 py-2 mb-4 outline-indigo-500"
-                    >
-                      <option value="">Select a vendor</option>
-                      {freelancers.map((freelancer) => (
-                        <option key={freelancer._id} value={freelancer.name}>
-                          {freelancer.name} ({freelancer.email})
-                        </option>
-                      ))}
-                    </select>
-
-                    <div className="flex justify-end gap-3">
-                      <button
-                        onClick={() => setIsVendorModalOpen(false)}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (vendorName.trim()) {
-                            dispatch(
-                              assignVendor({
-                                orderId: selectedOrder._id,
-                                vendorName,
-                              })
-                            );
-                            setIsVendorModalOpen(false);
-                          }
-                        }}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </Dialog.Panel>
-                </div>
-              </Dialog>
-            </Transition>
+            <AssignVendorModal
+              isOpen={isVendorModalOpen}
+              onClose={() => setIsVendorModalOpen(false)}
+              freelancers={freelancers}
+              selectedOrder={selectedOrder}
+              vendorName={vendorName}
+              setVendorName={setVendorName}
+              dispatch={dispatch}
+              assignVendor={assignVendor}
+              setShowVendorDetailModal={setShowVendorDetailModal}
+              setSelectedFreelancer={setSelectedFreelancer}
+            />
           </div>
         </Dialog>
       </Transition>
+      <VendorDetailModal
+        isOpen={showVendorDetailModal}
+        onClose={() => setShowVendorDetailModal(false)}
+        freelancer={selectedFreelancer}
+      />
     </div>
   );
 };
