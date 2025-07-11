@@ -62,9 +62,14 @@ const Navbar = () => {
         );
       case "Freelancer":
         return (
-          <a href="/freelancer-dashboard" className="nav-link">
-            Dashboard
-          </a>
+          <>
+            <a href="/freelancer-dashboard" className="nav-link">
+              Dashboard
+            </a>
+            <a href="/profile" className="nav-link">
+              Profile
+            </a>
+          </>
         );
       case "Project Coordinator":
         return (

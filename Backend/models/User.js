@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
       "Marketing",
       "IT",
       "Operations",
-      "Others",
+      "Other",
     ],
   },
   attendanceCriteria: { type: String },
