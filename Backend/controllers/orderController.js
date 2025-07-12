@@ -95,3 +95,17 @@ export const updateInstitution = async (req, res) => {
     res.status(500).json({ message: "Failed to update institution" });
   }
 };
+export const getVendorOrders = async (req, res) => {
+  try {
+    const freelancerName = req.user.name; // assuming vendor = freelancer name
+    const orders = await Order.find({ vendor: freelancerName })
+      .sort({ createdAt: -1 })
+      .populate("assignedBy", "name")
+      .populate("projectCoordinator", "name");
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching vendor orders:", error);
+    res.status(500).json({ error: "Failed to fetch vendor orders" });
+  }
+};

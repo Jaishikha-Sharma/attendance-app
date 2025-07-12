@@ -53,6 +53,34 @@ const orderSchema = new mongoose.Schema(
     duePaymentDate: {
       type: Date,
     },
+    vendorAmount: {
+      type: Number,
+      default: 0,
+    },
+    assignedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    chatApprovedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    invoiceGeneratedOn: {
+      type: Date,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["Paid", "Unpaid"],
+      default: "Unpaid",
+    },
+    customerFeedback: {
+      type: String,
+      default: "",
+    },
+    remarksByManagement: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

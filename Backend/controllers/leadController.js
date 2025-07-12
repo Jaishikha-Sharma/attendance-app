@@ -25,8 +25,6 @@ export const createLead = async (req, res) => {
   }
 };
 
-
-
 // 📥 Get All Leads (Role-Based)
 export const getAllLeads = async (req, res) => {
   try {

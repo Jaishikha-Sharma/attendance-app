@@ -71,7 +71,7 @@ export const updateInstitution = createAsyncThunk(
     try {
       const { auth } = getState();
       const res = await axios.put(
-      `${ORDER_API}/orders/${orderId}/institution`,
+        `${ORDER_API}/orders/${orderId}/institution`,
         { institution },
         {
           headers: {
@@ -83,6 +83,25 @@ export const updateInstitution = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(
         err.response?.data || "Failed to update institution"
+      );
+    }
+  }
+);
+// 🧾 Thunk to fetch vendor-assigned orders
+export const fetchVendorOrders = createAsyncThunk(
+  "order/fetchVendorOrders",
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const res = await axios.get(`${ORDER_API}/my-vendor-orders`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || "Failed to fetch vendor orders"
       );
     }
   }
@@ -113,7 +132,8 @@ const orderSlice = createSlice({
     error: null,
     success: false,
     order: null,
-    orders: [], // 🔁 List of all assigned orders for coordinator
+    orders: [],
+    vendorOrders: [],
   },
   reducers: {
     resetOrderState: (state) => {
@@ -199,6 +219,19 @@ const orderSlice = createSlice({
         );
       })
       .addCase(updateInstitution.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchVendorOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchVendorOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.vendorOrders = action.payload;
+      })
+      .addCase(fetchVendorOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

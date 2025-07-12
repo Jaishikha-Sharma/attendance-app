@@ -36,7 +36,7 @@ const leadSchema = new mongoose.Schema(
         "Other Reasons",
         "Order Placed",
       ],
-      required: true,
+      required: false,
     },
     enquiry: String,
   },
