@@ -42,6 +42,7 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+
     dueAmount: {
       type: Number,
       default: 0,
@@ -53,6 +54,7 @@ const orderSchema = new mongoose.Schema(
     duePaymentDate: {
       type: Date,
     },
+
     vendorAmount: {
       type: Number,
       default: 0,
@@ -84,7 +86,9 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
 orderSchema.pre("save", async function (next) {
+  // 🔢 Auto-generate order number
   if (this.isNew && !this.orderNo && this.projectCoordinator) {
     const User = mongoose.model("User");
     const coordinator = await User.findById(this.projectCoordinator);
@@ -98,6 +102,11 @@ orderSchema.pre("save", async function (next) {
       this.orderNo = `${prefix}1${1000 + count}`;
     }
   }
+
+  // 💸 Auto-calculate dueAmount
+  const selling = this.sellingPrice || 0;
+  const advance = this.advanceAmount || 0;
+  this.dueAmount = Math.max(selling - advance, 0); // Avoid negative due
 
   next();
 });
