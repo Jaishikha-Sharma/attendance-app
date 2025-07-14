@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
 import axios from "axios";
 import { ORDER_API } from "../utils/Constant";
+import { Country, State } from "country-state-city";
 
 const initialForm = {
   orderDate: "",
@@ -28,140 +29,13 @@ const initialForm = {
   projectCoordinator: "",
 };
 
-const countryStateData = {
-  India: [
-    "Andhra Pradesh",
-    "Arunachal Pradesh",
-    "Assam",
-    "Bihar",
-    "Chhattisgarh",
-    "Goa",
-    "Gujarat",
-    "Haryana",
-    "Himachal Pradesh",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
-    "Maharashtra",
-    "Manipur",
-    "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttar Pradesh",
-    "Uttarakhand",
-    "West Bengal",
-    "Andaman and Nicobar Islands",
-    "Chandigarh",
-    "Dadra and Nagar Haveli and Daman and Diu",
-    "Delhi",
-    "Jammu and Kashmir",
-    "Ladakh",
-    "Lakshadweep",
-    "Puducherry",
-  ],
-  "Antigua and Barbuda": ["All Saints"],
-  USA: ["California", "Texas", "Florida", "New York"],
-  UK: ["England", "Scotland", "Wales", "Northern Ireland"],
-};
-
-const countries = [
-  "Afghanistan",
-  "Albania",
-  "Algeria",
-  "Andorra",
-  "Angola",
-  "Anguilla",
-  "Antigua and Barbuda",
-  "Argentina",
-  "Armenia",
-  "Aruba",
-  "Australia",
-  "Austria",
-  "Azerbaijan",
-  "Bahamas",
-  "Bahrain",
-  "Bangladesh",
-  "Barbados",
-  "Belarus",
-  "Belgium",
-  "Belize",
-  "Benin",
-  "Bermuda",
-  "Bhutan",
-  "Bolivia",
-  "Bosnia and Herzegovina",
-  "Botswana",
-  "Brazil",
-  "British Indian Ocean Territory",
-  "Brunei",
-  "Bulgaria",
-  "Burkina Faso",
-  "Myanmar",
-  "Burundi",
-  "Cambodia",
-  "Cameroon",
-  "Canada",
-  "Cape Verde",
-  "Cayman Islands",
-  "Central African Republic",
-  "Chad",
-  "Christmas Island",
-  "Cocos (Keeling) Islands",
-  "Cook Islands",
-  "Chile",
-  "China",
-  "Colombia",
-  "Comoros",
-  "Denmark",
-  "Djibouti",
-  "Dominica",
-  "Dominican Republic",
-  "Timor-Leste",
-  "Tokelau",
-  "Turks and Caicos Islands",
-  "Ecuador",
-  "Egypt",
-  "El Salvador",
-  "Equatorial Guinea",
-  "Eritrea",
-  "Estonia",
-  "Ethiopia",
-  "Faroe Islands",
-  "Falkland Islands",
-  "Fiji",
-  "Guatemala",
-  "Guam",
-  "Guinea",
-  "Guinea-Bissau",
-  "Guyana",
-  "Haiti",
-  "Heard Island and McDonald Islands",
-  "Jordan",
-  "Honduras",
-  "Hong Kong",
-  "Hungary",
-  "Iceland",
-  "India",
-  "Indonesia",
-  "Iran",
-  "Iraq",
-  "USA",
-  "UK",
-];
-
 const OrderForm = () => {
   const dispatch = useDispatch();
   const { loading, success, error } = useSelector((state) => state.order);
   const [form, setForm] = useState(initialForm);
   const [coordinators, setCoordinators] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
 
   useEffect(() => {
     if (success) {
@@ -195,8 +69,19 @@ const OrderForm = () => {
     };
     fetchCoordinators();
   }, []);
+  useEffect(() => {
+    setCountries(Country.getAllCountries());
+  }, []);
+  useEffect(() => {
+    if (form.country) {
+      const selected = countries.find((c) => c.name === form.country);
+      if (selected) {
+        const stateList = State.getStatesOfCountry(selected.isoCode);
+        setStates(stateList);
+      }
+    }
+  }, [form.country, countries]);
 
-  const availableStates = countryStateData[form.country] || [];
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-xl shadow-lg animate-fade-in text-sm">
@@ -249,8 +134,8 @@ const OrderForm = () => {
           >
             <option value="">Select Country</option>
             {countries.map((c) => (
-              <option key={c} value={c}>
-                {c}
+              <option key={c.isoCode} value={c.name}>
+                {c.name}
               </option>
             ))}
           </select>
@@ -268,9 +153,9 @@ const OrderForm = () => {
             className="w-full border rounded-md px-3 py-2"
           >
             <option value="">Select State</option>
-            {availableStates.map((s) => (
-              <option key={s} value={s}>
-                {s}
+            {states.map((s) => (
+              <option key={s.isoCode} value={s.name}>
+                {s.name}
               </option>
             ))}
           </select>

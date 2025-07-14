@@ -126,11 +126,11 @@ const Navbar = () => {
         {/* User & Logout */}
         <div className="flex items-center gap-3 mt-4 md:mt-0">
           {user && (
-            <span className="flex items-center text-gray-600 text-sm font-medium">
-              <User className="w-4 h-4 mr-1 text-indigo-600" />
-              {user.name}
-            </span>
+            <div className="flex items-center gap-2 text-sm font-medium text-indigo-700">
+              👋 Welcome, <span className="font-semibold">{user.name}</span>
+            </div>
           )}
+
           <button
             onClick={handleLogout}
             className="bg-gray-100 hover:bg-gray-200 text-sm px-3 py-1 rounded flex items-center gap-1"

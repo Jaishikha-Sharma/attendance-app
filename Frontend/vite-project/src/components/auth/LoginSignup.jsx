@@ -85,7 +85,9 @@ const LoginSignup = () => {
           alt="PB Logo"
           className="w-10 h-10 rounded-full object-cover shadow ring-2 ring-indigo-300"
         />
-        <h1 className="text-2xl font-bold text-gray-800">PB Workspace</h1>
+        <h1 className="text-3xl font-extrabold tracking-widest text-indigo-700 uppercase drop-shadow-md">
+          PB WORKSPACE
+        </h1>
       </div>
 
       <div className="flex flex-col md:flex-row bg-white shadow-lg rounded-2xl overflow-hidden w-full max-w-5xl">

@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 import SalesDashboard from "./pages/SalesDashboard";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ChatWidget from "./components/ChatWidget";
 
 function App() {
   // Layout wrapper with Navbar for dashboard routes only
@@ -47,14 +48,12 @@ function App() {
             path="/coordinator-dashboard"
             element={<CoordinatorDashboard />}
           />
-           <Route
-            path="/sales-dashboard"
-            element={<SalesDashboard />}
-          />
+          <Route path="/sales-dashboard" element={<SalesDashboard />} />
           <Route path="/hr/leave-approval" element={<HRLeaveApproval />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
+      <ChatWidget />
       <ToastContainer position="top-right" autoClose={3000} />
     </Router>
   );
