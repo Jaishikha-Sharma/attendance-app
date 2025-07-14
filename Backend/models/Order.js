@@ -83,6 +83,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    vendorGroupLink: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

@@ -1,81 +1,103 @@
 import React, { useState } from "react";
+import { ExternalLink, Pencil } from "lucide-react";
+import { toast } from "react-toastify";
 
-const VendorGroupForm = () => {
-  const [status, setStatus] = useState("");
-  const [link, setLink] = useState("");
-  const [submitted, setSubmitted] = useState(null);
+const VendorGroupForm = ({ vendorGroupLink = "", onSave }) => {
+  const [link, setLink] = useState(vendorGroupLink);
+  const [editing, setEditing] = useState(!vendorGroupLink);
+  const [saving, setSaving] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmitted({ status, link });
+  const handleSave = async () => {
+    if (!link.trim()) return;
+
+    try {
+      setSaving(true);
+      await onSave(link);
+      toast.success("Vendor group link updated!");
+      setEditing(false);
+    } catch (err) {
+      console.error("Failed to update:", err);
+      toast.error("Failed to update vendor group link.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
-    setStatus("");
-    setLink("");
-    setSubmitted(null);
+    setLink(vendorGroupLink);
+    setEditing(false);
+  };
+
+  const handleOpenLink = () => {
+    if (link) {
+      window.open(link, "_blank");
+    }
   };
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-4 w-64 border">
-      <h3 className="text-center font-semibold text-indigo-700 border border-blue-400 rounded px-2 py-1 mb-3">
+    <div className="bg-white shadow border rounded-lg p-3 w-full max-w-sm">
+      <h3 className="text-sm font-semibold text-indigo-700 mb-2 border-b pb-1">
         Vendor Group
       </h3>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-        <select
-          className="border px-2 py-1 rounded focus:outline-none focus:ring focus:border-blue-300"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          <option value="">Choose Status</option>
-          <option value="Active">Active</option>
-          <option value="In-Progress">In-Progress</option>
-          <option value="Completed">Completed</option>
-        </select>
-
-        <input
-          type="url"
-          placeholder="Vendor Group Link"
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-          className="border px-2 py-1 rounded focus:outline-none focus:ring focus:border-blue-300"
-        />
-
-        <div className="flex justify-between mt-2">
+      {editing ? (
+        <div className="space-y-2">
+          <input
+            type="url"
+            placeholder="Paste group link"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            className="w-full border px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={handleCancel}
+              className="text-xs bg-gray-300 text-gray-800 px-2 py-1 rounded hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className={`text-xs px-3 py-1 rounded text-white ${
+                saving ? "bg-indigo-400" : "bg-indigo-600 hover:bg-indigo-700"
+              }`}
+            >
+              {saving ? "Saving..." : "Save"}
+            </button>
+          </div>
+        </div>
+      ) : link ? (
+        <div className="flex flex-col items-start gap-2">
           <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+            onClick={handleOpenLink}
+            className="text-xs bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 flex items-center gap-1"
           >
-            Submit
+            <ExternalLink className="w-3 h-3" />
+            Open Group
           </button>
+          <span className="text-green-600 text-[11px] bg-green-100 px-2 py-0.5 rounded font-medium">
+            Active Link
+          </span>
           <button
-            type="button"
-            onClick={handleCancel}
-            className="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-600"
+            onClick={() => setEditing(true)}
+            className="text-xs text-indigo-500 hover:underline flex items-center gap-1"
           >
-            Cancel
+            <Pencil className="w-3 h-3" />
+            Edit Link
           </button>
         </div>
-      </form>
-
-      {submitted && (
-        <div className="mt-4 text-sm bg-gray-50 border rounded p-2">
-          <p>
-            <span className="font-medium text-gray-700">Status:</span>{" "}
-            <span className="text-indigo-600">{submitted.status}</span>
+      ) : (
+        <div className="text-center">
+          <p className="text-gray-500 text-xs mb-2">
+            No vendor group link added.
           </p>
-          <p>
-            <span className="font-medium text-gray-700">Group Link:</span>{" "}
-            <a
-              href={submitted.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline break-all"
-            >
-              {submitted.link}
-            </a>
-          </p>
+          <button
+            onClick={() => setEditing(true)}
+            className="text-indigo-600 text-xs font-medium hover:underline"
+          >
+            ➕ Add Link
+          </button>
         </div>
       )}
     </div>

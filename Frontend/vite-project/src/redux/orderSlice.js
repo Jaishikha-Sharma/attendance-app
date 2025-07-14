@@ -107,6 +107,28 @@ export const fetchVendorOrders = createAsyncThunk(
     }
   }
 );
+export const updateVendorGroupLink = createAsyncThunk(
+  "order/updateVendorGroupLink",
+  async ({ orderId, vendorGroupLink }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const res = await axios.put(
+        `${ORDER_API}/update-vendor-group/${orderId}`,
+        { vendorGroupLink },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      );
+      return res.data.order;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || "Failed to update vendor group link"
+      );
+    }
+  }
+);
 
 // 📥 Thunk to fetch all orders assigned to the coordinator
 export const fetchCoordinatorOrders = createAsyncThunk(
@@ -233,6 +255,21 @@ const orderSlice = createSlice({
         state.vendorOrders = action.payload;
       })
       .addCase(fetchVendorOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateVendorGroupLink.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateVendorGroupLink.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.orders = state.orders.map((order) =>
+          order._id === action.payload._id ? action.payload : order
+        );
+      })
+      .addCase(updateVendorGroupLink.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

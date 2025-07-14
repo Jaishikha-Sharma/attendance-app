@@ -6,7 +6,8 @@ import {
   assignVendorToOrder,
   updateDueAmount,
   updateInstitution,
-  getVendorOrders
+  getVendorOrders,
+  updateVendorGroupLink
 } from "../controllers/orderController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -19,5 +20,6 @@ router.patch("/:id/assign-vendor", protect, assignVendorToOrder);
 router.patch("/:id/update-due", protect, updateDueAmount);
 router.put("/orders/:id/institution", updateInstitution);
 router.get("/my-vendor-orders", protect, getVendorOrders);
+router.put("/update-vendor-group/:id", protect, updateVendorGroupLink);
 
 export default router;

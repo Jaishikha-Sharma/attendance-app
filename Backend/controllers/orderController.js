@@ -73,7 +73,9 @@ export const updateDueAmount = async (req, res) => {
     const updatedDue = order.dueAmount - paidAmount;
 
     if (updatedDue < 0) {
-      return res.status(400).json({ message: "Paid amount exceeds due amount" });
+      return res
+        .status(400)
+        .json({ message: "Paid amount exceeds due amount" });
     }
 
     order.dueAmount = updatedDue;
@@ -89,7 +91,6 @@ export const updateDueAmount = async (req, res) => {
   }
 };
 
-
 export const updateInstitution = async (req, res) => {
   try {
     const orderId = req.params.id;
@@ -103,7 +104,9 @@ export const updateInstitution = async (req, res) => {
     order.institution = institution;
     await order.save();
 
-    res.status(200).json({ message: "Institution updated successfully", order });
+    res
+      .status(200)
+      .json({ message: "Institution updated successfully", order });
   } catch (error) {
     console.error("Error updating institution:", error);
     res.status(500).json({ message: "Failed to update institution" });
@@ -121,5 +124,24 @@ export const getVendorOrders = async (req, res) => {
   } catch (error) {
     console.error("Error fetching vendor orders:", error);
     res.status(500).json({ error: "Failed to fetch vendor orders" });
+  }
+};
+export const updateVendorGroupLink = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { vendorGroupLink } = req.body;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.vendorGroupLink = vendorGroupLink;
+    await order.save();
+
+    res.status(200).json({ message: "Vendor group link updated", order });
+  } catch (error) {
+    console.error("Error updating vendor group link:", error);
+    res.status(500).json({ message: "Failed to update vendor group link" });
   }
 };

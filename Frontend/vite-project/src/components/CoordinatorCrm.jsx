@@ -10,6 +10,8 @@ import AssignVendorModal from "./AssignVendorModal";
 import DuePaymentModal from "./DuePaymentModal";
 import { updateDueAmount } from "../redux/orderSlice";
 import { updateInstitution } from "../redux/orderSlice";
+import VendorGroupForm from "../components/VendorGroupForm";
+import { updateVendorGroupLink } from "../redux/orderSlice";
 
 const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
   const dispatch = useDispatch();
@@ -171,6 +173,20 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                           .toLocaleDateString("en-GB")
                           .replaceAll("/", "-")}
                     </p>
+                    <p>
+                      <span className="font-medium">Status:</span>{" "}
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded text-sm font-medium ${
+                          selectedOrder.deliveryStatus === "Delivered"
+                            ? "bg-green-100 text-green-800"
+                            : selectedOrder.deliveryStatus === "In-Transit"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {selectedOrder.deliveryStatus}
+                      </span>
+                    </p>
                   </div>
 
                   {/* Customer Info Card */}
@@ -302,17 +318,19 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                   </div>
 
                   {/* Status Info Card */}
-                  <div className="bg-blue-50 p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200 ease-in-out md:col-span-2">
-                    <h3 className="text-base font-semibold text-gray-900 mb-3 border-b pb-1">
+                  <div className="bg-blue-50 p-4 rounded-lg border border-gray-200 shadow-sm md:col-span-2 space-y-3">
+                    <h3 className="text-sm font-semibold text-gray-900 border-b pb-1">
                       Order Status
                     </h3>
-                    <p className="flex items-center gap-2">
+
+                    {/* Vendor Info Row */}
+                    <div className="flex items-center gap-2 text-sm">
                       <span className="font-medium">Vendor:</span>
                       <span
                         className={`${
                           !selectedOrder.vendor
                             ? "animate-pulse text-red-600 font-semibold"
-                            : ""
+                            : "text-gray-700"
                         }`}
                       >
                         {selectedOrder.vendor || "Not Assigned"}
@@ -326,22 +344,25 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
-                    </p>
+                    </div>
 
-                    <p>
-                      <span className="font-medium">Status:</span>{" "}
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded text-sm font-medium ${
-                          selectedOrder.deliveryStatus === "Delivered"
-                            ? "bg-green-100 text-green-800"
-                            : selectedOrder.deliveryStatus === "In-Transit"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {selectedOrder.deliveryStatus}
-                      </span>
-                    </p>
+                    {/* Vendor Group Section */}
+                    <div className="bg-purple-50 p-3 rounded-lg border border-gray-200 shadow-sm">
+                      <h4 className="text-sm font-semibold text-gray-800 border-b pb-1 mb-2">
+                        Vendor Group
+                      </h4>
+                      <VendorGroupForm
+                        vendorGroupLink={selectedOrder.vendorGroupLink}
+                        onSave={(newLink) => {
+                          dispatch(
+                            updateVendorGroupLink({
+                              orderId: selectedOrder._id,
+                              vendorGroupLink: newLink,
+                            })
+                          );
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
