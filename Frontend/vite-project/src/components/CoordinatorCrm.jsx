@@ -97,7 +97,12 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                   <td className="px-4 py-3">{order.customerName}</td>
                   <td className="px-4 py-3">{order.vendor || "N/A"}</td>
                   <td className="px-4 py-3">{order.topic}</td>
-                  <td className="px-4 py-3">{order.deadline?.slice(0, 10)}</td>
+                  <td className="px-4 py-3">
+                    {order.deadline &&
+                      new Date(order.deadline)
+                        .toLocaleDateString("en-GB")
+                        .replaceAll("/", "-")}
+                  </td>
                   <td className="px-4 py-3">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -153,11 +158,18 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                     </p>
                     <p>
                       <span className="font-medium">Deadline:</span>{" "}
-                      {selectedOrder.deadline?.slice(0, 10)}
+                      {selectedOrder.deadline &&
+                        new Date(selectedOrder.deadline)
+                          .toLocaleDateString("en-GB")
+                          .replaceAll("/", "-")}
                     </p>
+
                     <p>
                       <span className="font-medium">Order Date:</span>{" "}
-                      {selectedOrder.orderDate?.slice(0, 10)}
+                      {selectedOrder.orderDate &&
+                        new Date(selectedOrder.orderDate)
+                          .toLocaleDateString("en-GB")
+                          .replaceAll("/", "-")}
                     </p>
                   </div>
 
@@ -168,8 +180,11 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                     </h3>
                     <p>
                       <span className="font-medium">Name:</span>{" "}
-                      {selectedOrder.customerName}
+                      <span className="text-indigo-600 font-semibold bg-yellow-100 px-2 py-0.5 rounded">
+                        {selectedOrder.customerName}
+                      </span>
                     </p>
+
                     <p>
                       <span className="font-medium">Email:</span>{" "}
                       {selectedOrder.customerEmail}
@@ -293,7 +308,15 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                     </h3>
                     <p className="flex items-center gap-2">
                       <span className="font-medium">Vendor:</span>
-                      {selectedOrder.vendor || "N/A"}
+                      <span
+                        className={`${
+                          !selectedOrder.vendor
+                            ? "animate-pulse text-red-600 font-semibold"
+                            : ""
+                        }`}
+                      >
+                        {selectedOrder.vendor || "Not Assigned"}
+                      </span>
                       <button
                         onClick={() => {
                           setVendorName(selectedOrder.vendor || "");
