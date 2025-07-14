@@ -11,7 +11,7 @@ import DuePaymentModal from "./DuePaymentModal";
 import { updateDueAmount } from "../redux/orderSlice";
 import { updateInstitution } from "../redux/orderSlice";
 
-const CoordinatorCrm = () => {
+const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
   const {
@@ -21,7 +21,6 @@ const CoordinatorCrm = () => {
   } = useSelector((state) => state.order || {});
   const { list: freelancers } = useSelector((state) => state.freelancers);
 
-  const [selectedOrder, setSelectedOrder] = useState(null);
   const [isViewModalOpen, setViewModalOpen] = useState(false);
   const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
   const [vendorName, setVendorName] = useState("");
@@ -37,6 +36,12 @@ const CoordinatorCrm = () => {
       dispatch(fetchFreelancers(token));
     }
   }, [dispatch, token]);
+  useEffect(() => {
+    if (selectedOrder) {
+      const updated = orders.find((o) => o._id === selectedOrder._id);
+      if (updated) setSelectedOrder(updated);
+    }
+  }, [orders]);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -345,6 +350,12 @@ const CoordinatorCrm = () => {
         currentDue={selectedOrder?.dueAmount}
         dispatch={dispatch}
         updateDueAmount={updateDueAmount}
+        onDueUpdate={(newDue) =>
+          setSelectedOrder((prev) => ({
+            ...prev,
+            dueAmount: newDue,
+          }))
+        }
       />
     </div>
   );

@@ -1,4 +1,3 @@
-// ✅ CoordinatorDashboard.jsx with Sidebar Leave & History like Employee
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -14,6 +13,8 @@ import axios from "axios";
 import { ATTENDANCE_API } from "../utils/Constant";
 import { applyLeave, clearLeaveMessages } from "../redux/leaveSlice";
 import CoordinatorCrm from "../components/CoordinatorCrm.jsx";
+import DuePaymentModal from "../components/DuePaymentModal.jsx";
+import { updateDueAmount } from "../redux/orderSlice";
 
 const CoordinatorDashboard = () => {
   const { user, token } = useSelector((state) => state.auth);
@@ -30,6 +31,8 @@ const CoordinatorDashboard = () => {
   const [leaveDate, setLeaveDate] = useState("");
   const [leaveReason, setLeaveReason] = useState("");
   const [history, setHistory] = useState([]);
+  const [openDueModal, setOpenDueModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -358,7 +361,10 @@ const CoordinatorDashboard = () => {
         )}
         {activeTab === "CRM" && (
           <>
-            <CoordinatorCrm />
+            <CoordinatorCrm
+              selectedOrder={selectedOrder}
+              setSelectedOrder={setSelectedOrder}
+            />
           </>
         )}
 
@@ -368,6 +374,22 @@ const CoordinatorDashboard = () => {
           </div>
         )}
       </div>
+      {openDueModal && selectedOrder && (
+        <DuePaymentModal
+          isOpen={openDueModal}
+          onClose={() => setOpenDueModal(false)}
+          orderId={selectedOrder._id}
+          currentDue={selectedOrder.dueAmount}
+          dispatch={dispatch}
+          updateDueAmount={updateDueAmount}
+          onDueUpdate={(newDue) =>
+            setSelectedOrder((prev) => ({
+              ...prev,
+              dueAmount: newDue,
+            }))
+          }
+        />
+      )}
     </div>
   );
 };

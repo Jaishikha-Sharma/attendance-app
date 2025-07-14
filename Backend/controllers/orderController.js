@@ -56,15 +56,27 @@ export const assignVendorToOrder = async (req, res) => {
 };
 export const updateDueAmount = async (req, res) => {
   try {
-    const { dueAmount, paymentMode, paymentDate } = req.body;
+    let { paidAmount, paymentMode, paymentDate } = req.body;
     const orderId = req.params.id;
+
+    paidAmount = Number(paidAmount);
+
+    if (isNaN(paidAmount)) {
+      return res.status(400).json({ message: "Invalid paid amount" });
+    }
 
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    order.dueAmount = dueAmount;
+    const updatedDue = order.dueAmount - paidAmount;
+
+    if (updatedDue < 0) {
+      return res.status(400).json({ message: "Paid amount exceeds due amount" });
+    }
+
+    order.dueAmount = updatedDue;
     order.duePaymentMode = paymentMode;
     order.duePaymentDate = paymentDate;
 
@@ -76,6 +88,8 @@ export const updateDueAmount = async (req, res) => {
     res.status(500).json({ message: "Failed to update due amount" });
   }
 };
+
+
 export const updateInstitution = async (req, res) => {
   try {
     const orderId = req.params.id;

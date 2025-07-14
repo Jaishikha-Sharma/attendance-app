@@ -88,25 +88,23 @@ const orderSchema = new mongoose.Schema(
 );
 
 orderSchema.pre("save", async function (next) {
-  // 🔢 Auto-generate order number
+  // ✅ Safe unique order number
   if (this.isNew && !this.orderNo && this.projectCoordinator) {
     const User = mongoose.model("User");
     const coordinator = await User.findById(this.projectCoordinator);
 
     if (coordinator && coordinator.name) {
       const prefix = coordinator.name.slice(0, 3).toUpperCase();
-      const count = await mongoose.model("Order").countDocuments({
-        projectCoordinator: this.projectCoordinator,
-      });
-
-      this.orderNo = `${prefix}1${1000 + count}`;
+      this.orderNo = `${prefix}${Date.now()}`; // ✅ Always unique
     }
   }
 
-  // 💸 Auto-calculate dueAmount
-  const selling = this.sellingPrice || 0;
-  const advance = this.advanceAmount || 0;
-  this.dueAmount = Math.max(selling - advance, 0); // Avoid negative due
+  // 💰 Auto-calculate due amount for new orders
+  if (this.isNew) {
+    const selling = this.sellingPrice || 0;
+    const advance = this.advanceAmount || 0;
+    this.dueAmount = Math.max(selling - advance, 0);
+  }
 
   next();
 });

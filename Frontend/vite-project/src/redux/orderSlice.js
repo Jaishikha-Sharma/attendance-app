@@ -43,14 +43,14 @@ export const assignVendor = createAsyncThunk(
 export const updateDueAmount = createAsyncThunk(
   "order/updateDueAmount",
   async (
-    { orderId, dueAmount, paymentMode, paymentDate },
+    { orderId, paidAmount, paymentMode, paymentDate },
     { rejectWithValue, getState }
   ) => {
     try {
       const { auth } = getState();
       const res = await axios.patch(
         `${ORDER_API}/${orderId}/update-due`,
-        { dueAmount, paymentMode, paymentDate },
+        { paidAmount, paymentMode, paymentDate }, // ✅ fix here
         {
           headers: {
             Authorization: `Bearer ${auth.token}`,
@@ -65,6 +65,7 @@ export const updateDueAmount = createAsyncThunk(
     }
   }
 );
+
 export const updateInstitution = createAsyncThunk(
   "order/updateInstitution",
   async ({ orderId, institution }, { rejectWithValue, getState }) => {

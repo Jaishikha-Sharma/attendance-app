@@ -1,16 +1,30 @@
 import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 
-const DuePaymentModal = ({ isOpen, onClose, orderId, currentDue, dispatch, updateDueAmount }) => {
+const DuePaymentModal = ({
+  isOpen,
+  onClose,
+  orderId,
+  currentDue,
+  dispatch,
+  updateDueAmount,
+  onDueUpdate,
+}) => {
   const [duePaid, setDuePaid] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
+  const [updateCount, setUpdateCount] = useState(0); // ✅ Track update attempts
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const duePaidAmount = Number(duePaid);
 
-    // 🚫 Input Validation
-    if (!duePaidAmount || duePaidAmount <= 0 || duePaidAmount > currentDue) {
+    // ❌ Restrict to 2 updates max
+    if (updateCount >= 2) {
+      alert("You can only update due amount a maximum of 2 times.");
+      return;
+    }
+
+    if (!duePaidAmount || duePaidAmount <= 0 || duePaidAmount > Number(currentDue)) {
       alert("Enter a valid due amount (should not exceed current due).");
       return;
     }
@@ -20,19 +34,34 @@ const DuePaymentModal = ({ isOpen, onClose, orderId, currentDue, dispatch, updat
       return;
     }
 
-    const finalDue = currentDue - duePaidAmount;
+    const remainingDue = Number(currentDue) - duePaidAmount;
 
-    // ✅ Dispatch Redux action to update due
-    dispatch(
-      updateDueAmount({
-        orderId,
-        dueAmount: finalDue,
-        paymentMode,
-        paymentDate,
-      })
-    );
+    try {
+      await dispatch(
+        updateDueAmount({
+          orderId,
+          paidAmount: duePaidAmount,
+          paymentMode,
+          paymentDate,
+        })
+      );
 
-    onClose();
+      // ✅ Notify parent of due update
+      if (onDueUpdate) {
+        onDueUpdate(remainingDue);
+      }
+
+      // ✅ Increment update count
+      setUpdateCount((prev) => prev + 1);
+
+      // Reset form and close modal
+      setDuePaid("");
+      setPaymentMode("");
+      setPaymentDate("");
+      onClose();
+    } catch (err) {
+      alert("Failed to update due amount.");
+    }
   };
 
   return (
@@ -62,7 +91,7 @@ const DuePaymentModal = ({ isOpen, onClose, orderId, currentDue, dispatch, updat
               <option value="">Select Payment Mode</option>
               <option value="PayTM">PayTM</option>
               <option value="GPay">GPay</option>
-              <option value="PhonePy">PhonePy</option>
+              <option value="PhonePe">PhonePe</option>
               <option value="NEFT/IMPS/RTGS">NEFT/IMPS/RTGS</option>
               <option value="Razorpay Gateway">Razorpay Gateway</option>
               <option value="Cheque/DD">Cheque/DD</option>
@@ -78,7 +107,13 @@ const DuePaymentModal = ({ isOpen, onClose, orderId, currentDue, dispatch, updat
             />
 
             <p className="text-sm font-medium text-gray-700">
-              Remaining Due After Payment: ₹{currentDue - (Number(duePaid) || 0)}
+              Remaining Due After Payment: ₹
+              {Number(currentDue) - (Number(duePaid) || 0)}
+            </p>
+
+            {/* 👇 Info about how many times updated */}
+            <p className="text-xs text-red-600">
+              You have updated due {updateCount}/2 times.
             </p>
           </div>
 
@@ -91,7 +126,12 @@ const DuePaymentModal = ({ isOpen, onClose, orderId, currentDue, dispatch, updat
             </button>
             <button
               onClick={handleSubmit}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md"
+              className={`px-4 py-2 rounded-md text-white ${
+                updateCount >= 2
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-indigo-600 hover:bg-indigo-700"
+              }`}
+              disabled={updateCount >= 2}
             >
               Submit
             </button>
