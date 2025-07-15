@@ -118,7 +118,11 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                           : "bg-red-100 text-red-700"
                       }`}
                     >
-                      {order.deliveryStatus || "Pending"}
+                      {["Delivered", "In-Transit", "Undelivered"].includes(
+                        order.deliveryStatus
+                      )
+                        ? order.deliveryStatus
+                        : "Undelivered"}
                     </span>
                   </td>
                 </tr>
@@ -187,8 +191,13 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {selectedOrder.deliveryStatus || "Pending"}
+                        {["Delivered", "In-Transit", "Undelivered"].includes(
+                          selectedOrder.deliveryStatus
+                        )
+                          ? selectedOrder.deliveryStatus
+                          : "Undelivered"}
                       </span>
+
                       {selectedOrder.dueAmount === 0 && (
                         <button
                           onClick={() => setIsStatusModalOpen(true)}
@@ -325,6 +334,18 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
+                    </p>
+                    <p>
+                      <span className="font-medium">Due Amount Date:</span>{" "}
+                      {selectedOrder?.duePaymentDate
+                        ? new Date(
+                            selectedOrder.duePaymentDate
+                          ).toLocaleDateString("en-GB")
+                        : "-"}
+                    </p>
+                    <p>
+                      <span className="font-medium">Due Amount Mode:</span>{" "}
+                      {selectedOrder?.duePaymentMode || "-"}
                     </p>
                   </div>
 

@@ -40,7 +40,6 @@ const DeliveryStatusModal = ({
                 onChange={(e) => setStatus(e.target.value)}
                 className="w-full border px-3 py-2 rounded text-sm"
               >
-                <option value="Pending">Pending</option>
                 <option value="In-Transit">In-Transit</option>
                 <option value="Delivered">Delivered</option>
                 <option value="UnDelivered">UnDelivered</option>
