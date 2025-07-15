@@ -54,39 +54,22 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
         Assigned Orders
       </h2>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 shadow">
-        <table className="min-w-full divide-y divide-gray-200 bg-white text-sm text-left">
-          <thead className="bg-indigo-100 text-indigo-700">
-            <tr>
-              <th className="px-4 py-3">Order ID</th>
-              <th className="px-4 py-3">Customer Name</th>
-              <th className="px-4 py-3">Vendor</th>
-              <th className="px-4 py-3">Topic</th>
-              <th className="px-4 py-3">Deadline</th>
-              <th className="px-4 py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {loading ? (
+      {/* DESKTOP TABLE (hidden on small screens) */}
+      <div className="hidden md:block">
+        <div className="overflow-x-auto rounded-xl border border-gray-200 shadow">
+          <table className="min-w-full divide-y divide-gray-200 bg-white text-sm text-left">
+            <thead className="bg-indigo-100 text-indigo-700">
               <tr>
-                <td colSpan="6" className="text-center py-6 text-gray-500">
-                  Loading orders...
-                </td>
+                <th className="px-4 py-3">Order ID</th>
+                <th className="px-4 py-3">Customer Name</th>
+                <th className="px-4 py-3">Vendor</th>
+                <th className="px-4 py-3">Topic</th>
+                <th className="px-4 py-3">Deadline</th>
+                <th className="px-4 py-3">Status</th>
               </tr>
-            ) : error ? (
-              <tr>
-                <td colSpan="6" className="text-center py-6 text-red-500">
-                  {error}
-                </td>
-              </tr>
-            ) : orders.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="text-center py-6 text-gray-500">
-                  No assigned orders.
-                </td>
-              </tr>
-            ) : (
-              orders.map((order) => (
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {orders.map((order) => (
                 <tr
                   key={order._id}
                   className="hover:bg-indigo-50 cursor-pointer transition"
@@ -98,7 +81,6 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                   <td className="px-4 py-3">
                     #{order.orderNo || order._id.slice(-5).toUpperCase()}
                   </td>
-
                   <td className="px-4 py-3">{order.customerName}</td>
                   <td className="px-4 py-3">{order.vendor || "N/A"}</td>
                   <td className="px-4 py-3">{order.topic}</td>
@@ -126,10 +108,64 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                     </span>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* MOBILE VIEW CARDS (hidden on md and above) */}
+      <div className="md:hidden space-y-4">
+        {orders.map((order) => (
+          <div
+            key={order._id}
+            className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 hover:shadow-md transition cursor-pointer"
+            onClick={() => {
+              setSelectedOrder(order);
+              setViewModalOpen(true);
+            }}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-sm font-bold text-indigo-700">
+                #{order.orderNo || order._id.slice(-5).toUpperCase()}
+              </h3>
+              <span
+                className={`px-2 py-0.5 text-xs rounded-full font-medium ${
+                  order.deliveryStatus === "Delivered"
+                    ? "bg-green-100 text-green-700"
+                    : order.deliveryStatus === "In-Transit"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {["Delivered", "In-Transit", "Undelivered"].includes(
+                  order.deliveryStatus
+                )
+                  ? order.deliveryStatus
+                  : "Undelivered"}
+              </span>
+            </div>
+            <p className="text-xs text-gray-600">
+              <span className="font-medium text-gray-800">Customer:</span>{" "}
+              {order.customerName}
+            </p>
+            <p className="text-xs text-gray-600">
+              <span className="font-medium text-gray-800">Vendor:</span>{" "}
+              {order.vendor || "N/A"}
+            </p>
+            <p className="text-xs text-gray-600">
+              <span className="font-medium text-gray-800">Topic:</span>{" "}
+              {order.topic}
+            </p>
+            <p className="text-xs text-gray-600">
+              <span className="font-medium text-gray-800">Deadline:</span>{" "}
+              {order.deadline &&
+                new Date(order.deadline)
+                  .toLocaleDateString("en-GB")
+                  .replaceAll("/", "-")}
+            </p>
+          </div>
+        ))}
       </div>
 
       {/* View Modal */}
