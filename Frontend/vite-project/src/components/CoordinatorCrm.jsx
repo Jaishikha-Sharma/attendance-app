@@ -157,38 +157,47 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
               {selectedOrder && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-800">
                   {/* Basic Info Card */}
-                  <div className="bg-slate-50 p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200 ease-in-out">
-                    <h3 className="text-base font-semibold text-gray-900 mb-3 border-b pb-1">
+                  <div className="bg-slate-50 p-5 rounded-xl border border-gray-200 shadow-md hover:shadow-lg hover:scale-[1.01] transition-all duration-200 ease-in-out space-y-2">
+                    <h3 className="text-base font-semibold text-gray-900 border-b pb-2 mb-2 tracking-wide">
                       Basic Information
                     </h3>
-                    <p>
-                      <span className="font-medium">Order No:</span> #
-                      {selectedOrder.orderNo || selectedOrder._id}
+
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">
+                        Order No:
+                      </span>{" "}
+                      #{selectedOrder.orderNo || selectedOrder._id}
                     </p>
-                    <p>
-                      <span className="font-medium">Deadline:</span>{" "}
+
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">
+                        Deadline:
+                      </span>{" "}
                       {selectedOrder.deadline &&
                         new Date(selectedOrder.deadline)
                           .toLocaleDateString("en-GB")
                           .replaceAll("/", "-")}
                     </p>
 
-                    <p>
-                      <span className="font-medium">Order Date:</span>{" "}
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">
+                        Order Date:
+                      </span>{" "}
                       {selectedOrder.orderDate &&
                         new Date(selectedOrder.orderDate)
                           .toLocaleDateString("en-GB")
                           .replaceAll("/", "-")}
                     </p>
-                    <p className="flex items-center gap-2">
-                      <span className="font-medium">Status:</span>
+
+                    <p className="text-sm text-gray-700 flex items-center gap-2">
+                      <span className="font-medium text-gray-800">Status:</span>
                       <span
-                        className={`inline-block px-2 py-0.5 rounded text-sm font-medium ${
+                        className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium tracking-wide ${
                           selectedOrder.deliveryStatus === "Delivered"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-green-100 text-green-700"
                             : selectedOrder.deliveryStatus === "In-Transit"
                             ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
+                            : "bg-red-100 text-red-700"
                         }`}
                       >
                         {["Delivered", "In-Transit", "Undelivered"].includes(
@@ -201,7 +210,8 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                       {selectedOrder.dueAmount === 0 && (
                         <button
                           onClick={() => setIsStatusModalOpen(true)}
-                          className="text-indigo-600 hover:text-indigo-800"
+                          className="p-1 rounded hover:bg-indigo-100 text-indigo-600 hover:text-indigo-800 transition"
+                          aria-label="Edit Status"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
@@ -210,31 +220,41 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                   </div>
 
                   {/* Customer Info Card */}
-                  <div className="bg-indigo-50 p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200 ease-in-out">
-                    <h3 className="text-base font-semibold text-gray-900 mb-3 border-b pb-1">
+                  <div className="bg-indigo-50 p-5 rounded-xl border border-gray-200 shadow-md hover:shadow-lg hover:scale-[1.01] transition-all duration-200 ease-in-out space-y-2">
+                    <h3 className="text-base font-semibold text-gray-900 border-b pb-2 mb-2 tracking-wide">
                       Customer Details
                     </h3>
-                    <p>
-                      <span className="font-medium">Name:</span>{" "}
-                      <span className="text-indigo-600 font-semibold bg-yellow-100 px-2 py-0.5 rounded">
+
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">Name:</span>{" "}
+                      <span className="text-indigo-700 font-semibold bg-yellow-100 px-2 py-0.5 rounded">
                         {selectedOrder.customerName}
                       </span>
                     </p>
 
-                    <p>
-                      <span className="font-medium">Email:</span>{" "}
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">Email:</span>{" "}
                       {selectedOrder.customerEmail}
                     </p>
-                    <p>
-                      <span className="font-medium">Contact:</span>{" "}
+
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">
+                        Contact:
+                      </span>{" "}
                       {selectedOrder.contact}
                     </p>
-                    <p>
-                      <span className="font-medium">Address:</span>{" "}
+
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">
+                        Address:
+                      </span>{" "}
                       {selectedOrder.customerAddress}
                     </p>
-                    <p className="flex items-center gap-2">
-                      <span className="font-medium">Institution:</span>
+
+                    <p className="text-sm text-gray-700 flex items-center gap-2">
+                      <span className="font-medium text-gray-800">
+                        Institution:
+                      </span>
                       {isEditingInstitution ? (
                         <>
                           <input
@@ -255,13 +275,13 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                               );
                               setIsEditingInstitution(false);
                             }}
-                            className="text-green-600 hover:text-green-800 text-xs"
+                            className="text-green-600 hover:text-green-800 text-xs font-medium"
                           >
                             Save
                           </button>
                           <button
                             onClick={() => setIsEditingInstitution(false)}
-                            className="text-gray-500 hover:text-gray-700 text-xs"
+                            className="text-gray-500 hover:text-gray-700 text-xs font-medium"
                           >
                             Cancel
                           </button>
@@ -276,7 +296,8 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                               );
                               setIsEditingInstitution(true);
                             }}
-                            className="text-indigo-600 hover:text-indigo-800"
+                            className="p-1 rounded hover:bg-indigo-100 text-indigo-600 hover:text-indigo-800 transition"
+                            aria-label="Edit Institution"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
@@ -286,24 +307,30 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                   </div>
 
                   {/* Project Info Card */}
-                  <div className="bg-green-50 p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200 ease-in-out">
-                    <h3 className="text-base font-semibold text-gray-900 mb-3 border-b pb-1">
+                  <div className="bg-green-50 p-5 rounded-xl border border-gray-200 shadow-md hover:shadow-lg hover:scale-[1.01] transition-all duration-200 ease-in-out space-y-2">
+                    <h3 className="text-base font-semibold text-gray-900 border-b pb-2 mb-2 tracking-wide">
                       Project Details
                     </h3>
-                    <p>
-                      <span className="font-medium">Topic:</span>{" "}
+
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">Topic:</span>{" "}
                       {selectedOrder.topic}
                     </p>
-                    <p>
-                      <span className="font-medium">Type:</span>{" "}
+
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">Type:</span>{" "}
                       {selectedOrder.projectType}
                     </p>
-                    <p>
-                      <span className="font-medium">Purpose:</span>{" "}
+
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">
+                        Purpose:
+                      </span>{" "}
                       {selectedOrder.purpose}
                     </p>
-                    <p>
-                      <span className="font-medium">Notes:</span>{" "}
+
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">Notes:</span>{" "}
                       {selectedOrder.notes || "-"}
                     </p>
                   </div>
