@@ -12,6 +12,8 @@ import { updateDueAmount } from "../redux/orderSlice";
 import { updateInstitution } from "../redux/orderSlice";
 import VendorGroupForm from "../components/VendorGroupForm";
 import { updateVendorGroupLink } from "../redux/orderSlice";
+import DeliveryStatusModal from "./DeliveryStatusModal";
+import { updateDeliveryStatus } from "../redux/orderSlice";
 
 const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
   const dispatch = useDispatch();
@@ -31,6 +33,7 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
   const [isDueModalOpen, setIsDueModalOpen] = useState(false);
   const [isEditingInstitution, setIsEditingInstitution] = useState(false);
   const [institutionInput, setInstitutionInput] = useState("");
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -173,8 +176,8 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                           .toLocaleDateString("en-GB")
                           .replaceAll("/", "-")}
                     </p>
-                    <p>
-                      <span className="font-medium">Status:</span>{" "}
+                    <p className="flex items-center gap-2">
+                      <span className="font-medium">Status:</span>
                       <span
                         className={`inline-block px-2 py-0.5 rounded text-sm font-medium ${
                           selectedOrder.deliveryStatus === "Delivered"
@@ -184,8 +187,16 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {selectedOrder.deliveryStatus}
+                        {selectedOrder.deliveryStatus || "Pending"}
                       </span>
+                      {selectedOrder.dueAmount === 0 && (
+                        <button
+                          onClick={() => setIsStatusModalOpen(true)}
+                          className="text-indigo-600 hover:text-indigo-800"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                      )}
                     </p>
                   </div>
 
@@ -400,6 +411,19 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
             dueAmount: newDue,
           }))
         }
+      />
+      <DeliveryStatusModal
+        isOpen={isStatusModalOpen}
+        onClose={() => setIsStatusModalOpen(false)}
+        currentStatus={selectedOrder?.deliveryStatus}
+        onSave={(newStatus) => {
+          dispatch(
+            updateDeliveryStatus({
+              orderId: selectedOrder._id,
+              deliveryStatus: newStatus,
+            })
+          );
+        }}
       />
     </div>
   );

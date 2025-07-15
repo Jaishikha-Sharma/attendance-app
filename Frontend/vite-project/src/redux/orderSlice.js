@@ -147,6 +147,28 @@ export const fetchCoordinatorOrders = createAsyncThunk(
     }
   }
 );
+export const updateDeliveryStatus = createAsyncThunk(
+  "order/updateDeliveryStatus",
+  async ({ orderId, deliveryStatus }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const res = await axios.patch(
+        `${ORDER_API}/${orderId}/update-status`,
+        { deliveryStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      );
+      return res.data.order;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || "Failed to update delivery status"
+      );
+    }
+  }
+);
 
 const orderSlice = createSlice({
   name: "order",
@@ -270,6 +292,22 @@ const orderSlice = createSlice({
         );
       })
       .addCase(updateVendorGroupLink.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // 🔄 Update delivery status
+      .addCase(updateDeliveryStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateDeliveryStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.orders = state.orders.map((order) =>
+          order._id === action.payload._id ? action.payload : order
+        );
+      })
+      .addCase(updateDeliveryStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

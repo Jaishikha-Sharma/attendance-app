@@ -145,3 +145,27 @@ export const updateVendorGroupLink = async (req, res) => {
     res.status(500).json({ message: "Failed to update vendor group link" });
   }
 };
+// 👇 Add this in orderController.js
+export const updateDeliveryStatus = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { deliveryStatus } = req.body;
+
+    if (!["Delivered", "UnDelivered", "Pending" , "In-Transit"].includes(deliveryStatus)) {
+      return res.status(400).json({ message: "Invalid delivery status" });
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.deliveryStatus = deliveryStatus;
+    await order.save();
+
+    res.status(200).json({ message: "Delivery status updated", order });
+  } catch (error) {
+    console.error("Error updating delivery status:", error);
+    res.status(500).json({ message: "Failed to update delivery status" });
+  }
+};
