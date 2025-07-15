@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
-import { Eye, Search } from "lucide-react";
+import { Info, Search, CheckCircle } from "lucide-react";
 
 const AssignVendorModal = ({
   isOpen,
@@ -60,7 +60,11 @@ const AssignVendorModal = ({
               filteredFreelancers.map((freelancer) => (
                 <div
                   key={freelancer._id}
-                  className="flex items-center justify-between bg-gray-50 px-4 py-2 rounded-md hover:bg-indigo-50 border border-gray-200 transition cursor-pointer"
+                  className={`flex items-center justify-between px-4 py-2 rounded-md border transition cursor-pointer ${
+                    vendorName === freelancer.name
+                      ? "bg-indigo-100 border-indigo-500"
+                      : "bg-gray-50 hover:bg-indigo-50 border-gray-200"
+                  }`}
                   onClick={() => setVendorName(freelancer.name)}
                 >
                   <div className="text-sm font-medium text-gray-800">
@@ -69,17 +73,22 @@ const AssignVendorModal = ({
                       ({freelancer.email})
                     </span>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedFreelancer(freelancer);
-                      setShowVendorDetailModal(true);
-                    }}
-                    className="text-indigo-600 hover:text-indigo-800 transition"
-                    title="View Details"
-                  >
-                    <Eye className="w-5 h-5" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {vendorName === freelancer.name && (
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedFreelancer(freelancer);
+                        setShowVendorDetailModal(true);
+                      }}
+                      className="text-indigo-600 hover:text-indigo-800 transition"
+                      title="View Details"
+                    >
+                      <Info className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
               ))
             ) : (
