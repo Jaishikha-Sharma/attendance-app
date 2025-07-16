@@ -27,7 +27,7 @@ export const assignVendors = createAsyncThunk(
       const { auth } = getState();
       const res = await axios.patch(
         `${ORDER_API}/${orderId}/assign-vendor`, // ✅ correct route
-        { vendors }, 
+        { vendors },
         {
           headers: {
             Authorization: `Bearer ${auth.token}`,
@@ -192,15 +192,14 @@ export const updateCustomerGroupLink = createAsyncThunk(
     }
   }
 );
-// 💰 Update vendor price thunk
 export const updateVendorPrice = createAsyncThunk(
   "order/updateVendorPrice",
-  async ({ orderId, vendorAmount }, { rejectWithValue, getState }) => {
+  async ({ orderId, vendorName, price }, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
       const res = await axios.patch(
         `${ORDER_API}/${orderId}/update-vendor-price`,
-        { vendorAmount },
+        { vendorName, price }, // ✅ fix keys
         {
           headers: {
             Authorization: `Bearer ${auth.token}`,
@@ -381,10 +380,22 @@ const orderSlice = createSlice({
       .addCase(updateVendorPrice.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.orders = state.orders.map((order) =>
-          order._id === action.payload._id ? action.payload : order
-        );
+
+        const updatedOrder = action.payload;
+        state.orders = state.orders.map((order) => {
+          if (order._id === updatedOrder._id) {
+            return {
+              ...order,
+              vendorPrices: {
+                ...order.vendorPrices,
+                ...updatedOrder.vendorPrices, // <- this ensures updated prices persist
+              },
+            };
+          }
+          return order;
+        });
       })
+
       .addCase(updateVendorPrice.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

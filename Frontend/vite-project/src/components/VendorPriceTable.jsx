@@ -2,23 +2,23 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { updateVendorPrice } from "../redux/orderSlice";
 
-const VendorPriceTable = ({ order }) => {
+const VendorPriceTable = ({ order, setSelectedOrder }) => {
   const dispatch = useDispatch();
-
-  // Maintain a price per vendor
   const [vendorPrices, setVendorPrices] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Set initial prices when order changes
+  // 🧠 Initialize vendorPrices state from order.vendorPrices
   useEffect(() => {
     if (order?.vendors?.length) {
       const initialPrices = {};
       order.vendors.forEach((vendor) => {
-        initialPrices[vendor] = order.vendorAmount || "";
+        initialPrices[vendor] = order.vendorPrices?.[vendor] ?? "";
       });
       setVendorPrices(initialPrices);
     }
   }, [order]);
 
+  // Handle input change
   const handleChange = (vendorName, value) => {
     setVendorPrices((prev) => ({
       ...prev,
@@ -26,14 +26,16 @@ const VendorPriceTable = ({ order }) => {
     }));
   };
 
+  // Save all vendor prices one by one
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Optional: Loop through all vendors if you support per-vendor pricing
     for (const vendorName of order.vendors || []) {
       const price = vendorPrices[vendorName];
-      if (!price || isNaN(price)) {
-        alert(`Invalid price for ${vendorName}`);
+      if (price === "" || isNaN(price)) {
+        alert(`❌ Invalid price for ${vendorName}`);
+        setIsSubmitting(false);
         return;
       }
 
@@ -41,23 +43,35 @@ const VendorPriceTable = ({ order }) => {
         const action = await dispatch(
           updateVendorPrice({
             orderId: order._id,
-            vendorAmount: Number(price), // adjust if you later allow per-vendor prices
+            vendorName,
+            price: Number(price),
           })
         );
 
-        if (action.payload?.order?.vendorAmount) {
-          setVendorPrices((prev) => ({
-            ...prev,
-            [vendorName]: action.payload.order.vendorAmount.toString(),
-          }));
+        if (action.meta.requestStatus !== "fulfilled") {
+          alert(`❌ Failed to update price for ${vendorName}`);
+          setIsSubmitting(false);
+          return;
         }
       } catch (error) {
         console.error("Error updating vendor price:", error);
-        alert(`Failed to update price for ${vendorName}`);
+        alert(`❌ Error updating price for ${vendorName}`);
+        setIsSubmitting(false);
+        return;
       }
     }
 
-    alert("Vendor prices updated successfully");
+    // ✅ Final update to selectedOrder in parent
+    setSelectedOrder((prev) => ({
+      ...prev,
+      vendorPrices: {
+        ...prev.vendorPrices,
+        ...vendorPrices,
+      },
+    }));
+
+    alert("✅ Vendor prices updated successfully");
+    setIsSubmitting(false);
   };
 
   return (
@@ -88,10 +102,8 @@ const VendorPriceTable = ({ order }) => {
                   <td className="border px-4 py-2">
                     <input
                       type="number"
-                      value={vendorPrices[vendor] || ""}
-                      onChange={(e) =>
-                        handleChange(vendor, e.target.value)
-                      }
+                      value={vendorPrices[vendor] ?? ""}
+                      onChange={(e) => handleChange(vendor, e.target.value)}
                       placeholder="e.g. 1000"
                       className="border border-gray-300 rounded-md px-3 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
@@ -106,9 +118,10 @@ const VendorPriceTable = ({ order }) => {
         <div className="text-right">
           <button
             type="submit"
-            className="inline-block px-6 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition"
+            disabled={isSubmitting}
+            className="inline-block px-6 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition disabled:opacity-60"
           >
-            Save Price
+            {isSubmitting ? "Saving..." : "Save Price"}
           </button>
         </div>
       </form>

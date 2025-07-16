@@ -149,13 +149,16 @@ export const updateVendorGroupLink = async (req, res) => {
     res.status(500).json({ message: "Failed to update vendor group link" });
   }
 };
-// 👇 Add this in orderController.js
 export const updateDeliveryStatus = async (req, res) => {
   try {
     const orderId = req.params.id;
     const { deliveryStatus } = req.body;
 
-    if (!["Delivered", "UnDelivered", "Pending" , "In-Transit"].includes(deliveryStatus)) {
+    if (
+      !["Delivered", "UnDelivered", "Pending", "In-Transit"].includes(
+        deliveryStatus
+      )
+    ) {
       return res.status(400).json({ message: "Invalid delivery status" });
     }
 
@@ -194,18 +197,36 @@ export const updateCustomerGroupLink = async (req, res) => {
 };
 export const updateVendorPrice = async (req, res) => {
   try {
-    const { vendorAmount } = req.body;
+    const { vendorName, price } = req.body;
     const orderId = req.params.id;
+
+    if (!vendorName || typeof price !== "number") {
+      return res
+        .status(400)
+        .json({ message: "Vendor name and valid price are required" });
+    }
 
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    order.vendorAmount = vendorAmount;
+    if (!order.vendors.includes(vendorName)) {
+      return res
+        .status(400)
+        .json({ message: "Vendor is not assigned to this order" });
+    }
+
+    // ✅ Fix: Initialize vendorPrices if undefined
+    if (!order.vendorPrices || typeof order.vendorPrices !== "object") {
+      order.vendorPrices = {};
+    }
+
+    order.vendorPrices[vendorName] = price;
+
     await order.save();
 
-    res.status(200).json({ message: "Vendor price updated successfully", order });
+    res.status(200).json({ message: "Vendor price updated", order });
   } catch (error) {
     console.error("Error updating vendor price:", error);
     res.status(500).json({ message: "Failed to update vendor price" });

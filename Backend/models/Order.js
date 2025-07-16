@@ -54,10 +54,10 @@ const orderSchema = new mongoose.Schema(
     duePaymentDate: {
       type: Date,
     },
-
-    vendorAmount: {
-      type: Number,
-      default: 0,
+    vendorPrices: {
+      type: Map,
+      of: Number,
+      default: {},
     },
     assignedBy: {
       type: mongoose.Schema.Types.ObjectId,

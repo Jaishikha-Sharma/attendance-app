@@ -51,6 +51,7 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
     }
   }, [orders]);
 
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <h2 className="text-2xl font-bold text-indigo-700 mb-6">
@@ -496,7 +497,7 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                               Vendor Pricing
                             </h5>
                             <div className="bg-white p-4 border border-gray-200 rounded-xl shadow-sm">
-                              <VendorPriceTable order={selectedOrder} />
+                              <VendorPriceTable order={selectedOrder} setSelectedOrder={setSelectedOrder} />
                             </div>
                           </div>
                         )}
