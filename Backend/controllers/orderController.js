@@ -169,3 +169,22 @@ export const updateDeliveryStatus = async (req, res) => {
     res.status(500).json({ message: "Failed to update delivery status" });
   }
 };
+export const updateCustomerGroupLink = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { customerGroupLink } = req.body;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.customerGroupLink = customerGroupLink;
+    await order.save();
+
+    res.status(200).json({ message: "Customer group link updated", order });
+  } catch (error) {
+    console.error("Error updating customer group link:", error);
+    res.status(500).json({ message: "Failed to update customer group link" });
+  }
+};

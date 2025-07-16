@@ -169,6 +169,28 @@ export const updateDeliveryStatus = createAsyncThunk(
     }
   }
 );
+export const updateCustomerGroupLink = createAsyncThunk(
+  "order/updateCustomerGroupLink",
+  async ({ orderId, customerGroupLink }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const res = await axios.put(
+        `${ORDER_API}/customer-group-link/${orderId}`,
+        { customerGroupLink },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      );
+      return res.data.order;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || "Failed to update customer group link"
+      );
+    }
+  }
+);
 
 const orderSlice = createSlice({
   name: "order",
@@ -308,6 +330,21 @@ const orderSlice = createSlice({
         );
       })
       .addCase(updateDeliveryStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateCustomerGroupLink.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateCustomerGroupLink.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.orders = state.orders.map((order) =>
+          order._id === action.payload._id ? action.payload : order
+        );
+      })
+      .addCase(updateCustomerGroupLink.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
