@@ -8,26 +8,17 @@ const VendorDetailModal = ({ isOpen, onClose, freelancer }) => {
   const {
     name,
     email,
-    contactNo,
-    alternateContact,
     state,
     stream,
     course,
     specialized,
     activityTime,
     address,
-    department,
-    role,
-    joiningDate,
-    dob,
   } = freelancer;
 
   const rows = [
     { label: "Name", value: name },
     { label: "Email", value: email },
-    { label: "Contact No", value: contactNo || "N/A" },
-    { label: "Alternate Contact", value: alternateContact || "N/A" },
-    { label: "DOB", value: dob?.slice(0, 10) || "N/A" },
     { label: "Stream", value: stream || "N/A" },
     { label: "Course", value: course || "N/A" },
     {
@@ -42,9 +33,6 @@ const VendorDetailModal = ({ isOpen, onClose, freelancer }) => {
         "N/A"
       ),
     },
-    { label: "Department", value: department || "N/A" },
-    { label: "Role", value: role || "Freelancer" },
-    { label: "Joining Date", value: joiningDate?.slice(0, 10) || "N/A" },
     { label: "Activity Time", value: activityTime || "N/A" },
     { label: "State", value: state || "N/A" },
     { label: "Address", value: address || "N/A" },

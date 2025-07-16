@@ -177,7 +177,7 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
         >
           <div className="fixed inset-0 bg-black/30" />
           <div className="fixed inset-0 flex items-center justify-center p-4">
-            <Dialog.Panel className="bg-white w-full max-w-2xl rounded-xl p-6 shadow-xl overflow-y-auto max-h-[90vh]">
+            <Dialog.Panel className="bg-white w-full max-w-5xl rounded-xl p-6 shadow-xl overflow-y-auto max-h-[90vh]">
               <div className="flex justify-between items-center mb-4">
                 <Dialog.Title className="text-lg font-semibold text-indigo-700">
                   📝 Order Details
@@ -209,10 +209,13 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                       <span className="font-medium text-gray-800">
                         Deadline:
                       </span>{" "}
-                      {selectedOrder.deadline &&
-                        new Date(selectedOrder.deadline)
-                          .toLocaleDateString("en-GB")
-                          .replaceAll("/", "-")}
+                      {selectedOrder.deadline && (
+                        <span className="text-indigo-700 font-semibold bg-yellow-100 px-2 py-0.5 rounded">
+                          {new Date(selectedOrder.deadline)
+                            .toLocaleDateString("en-GB")
+                            .replaceAll("/", "-")}
+                        </span>
+                      )}
                     </p>
 
                     <p className="text-sm text-gray-700">
@@ -285,6 +288,12 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                         Address:
                       </span>{" "}
                       {selectedOrder.customerAddress}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium text-gray-800">State:</span>{" "}
+                      <span className="text-gray-800 font-semibol px-2 py-0.5 rounded">
+                        {selectedOrder.state}
+                      </span>
                     </p>
 
                     <p className="text-sm text-gray-700 flex items-center gap-2">
