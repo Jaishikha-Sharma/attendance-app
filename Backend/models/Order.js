@@ -23,7 +23,7 @@ const orderSchema = new mongoose.Schema(
     advanceAmount: Number,
     deliveryStatus: {
       type: String,
-      enum: ["UnDelivered", "Delivered", "Pending", "In-Transit"],
+      enum: ["UnDelivered", "Delivered", "Pending" , "In-Transit"],
       default: "Pending",
     },
 
@@ -84,10 +84,6 @@ const orderSchema = new mongoose.Schema(
       default: "",
     },
     vendorGroupLink: {
-      type: String,
-      default: "",
-    },
-    customerGroupLink: {
       type: String,
       default: "",
     },

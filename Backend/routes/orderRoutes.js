@@ -10,6 +10,7 @@ import {
   updateVendorGroupLink,
   updateDeliveryStatus,
   updateCustomerGroupLink,
+  updateVendorPrice
 } from "../controllers/orderController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -25,5 +26,6 @@ router.get("/my-vendor-orders", protect, getVendorOrders);
 router.put("/update-vendor-group/:id", protect, updateVendorGroupLink);
 router.patch("/:id/update-status", protect, updateDeliveryStatus);
 router.put("/customer-group-link/:id", protect, updateCustomerGroupLink);
+router.patch("/:id/update-vendor-price", protect, updateVendorPrice);
 
 export default router;

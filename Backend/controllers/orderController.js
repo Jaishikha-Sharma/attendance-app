@@ -188,3 +188,23 @@ export const updateCustomerGroupLink = async (req, res) => {
     res.status(500).json({ message: "Failed to update customer group link" });
   }
 };
+export const updateVendorPrice = async (req, res) => {
+  try {
+    const { vendorAmount } = req.body;
+    const orderId = req.params.id;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.vendorAmount = vendorAmount;
+    await order.save();
+
+    res.status(200).json({ message: "Vendor price updated successfully", order });
+  } catch (error) {
+    console.error("Error updating vendor price:", error);
+    res.status(500).json({ message: "Failed to update vendor price" });
+  }
+};
+

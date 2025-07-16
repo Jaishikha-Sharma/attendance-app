@@ -16,6 +16,7 @@ import DeliveryStatusModal from "./DeliveryStatusModal";
 import { updateDeliveryStatus } from "../redux/orderSlice";
 import CustomerGroupForm from "../components/CustomerGroupForm";
 import { updateCustomerGroupLink } from "../redux/orderSlice";
+import VendorPriceTable from "./VendorPriceTable";
 
 const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
   const dispatch = useDispatch();
@@ -366,7 +367,9 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                     </p>
 
                     <p className="text-sm text-gray-700">
-                      <span className="font-medium text-gray-800">Project Type:</span>{" "}
+                      <span className="font-medium text-gray-800">
+                        Project Type:
+                      </span>{" "}
                       {selectedOrder.projectType}
                     </p>
 
@@ -453,28 +456,42 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                       </button>
                     </div>
 
-                    {/* 👇 Side-by-side Group Sections */}
+                    {/* Side-by-side Group Sections */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Vendor Group Section */}
-                      <div className="bg-purple-50 p-3 rounded-lg border border-gray-200 shadow-sm">
-                        <h4 className="text-sm font-semibold text-gray-800 border-b pb-1 mb-2">
-                          Vendor Group
-                        </h4>
-                        <VendorGroupForm
-                          vendorGroupLink={selectedOrder.vendorGroupLink}
-                          onSave={(newLink) => {
-                            dispatch(
-                              updateVendorGroupLink({
-                                orderId: selectedOrder._id,
-                                vendorGroupLink: newLink,
-                              })
-                            );
-                          }}
-                        />
+                      <div className="bg-purple-50 p-4 rounded-lg border border-gray-200 shadow-sm space-y-4">
+                        <div>
+                          <h4 className="text-sm font-semibold text-gray-800 border-b pb-1 mb-2">
+                            Vendor Group
+                          </h4>
+                          <VendorGroupForm
+                            vendorGroupLink={selectedOrder.vendorGroupLink}
+                            onSave={(newLink) => {
+                              dispatch(
+                                updateVendorGroupLink({
+                                  orderId: selectedOrder._id,
+                                  vendorGroupLink: newLink,
+                                })
+                              );
+                            }}
+                          />
+                        </div>
+
+                        {/* Separated Vendor Price Table */}
+                        {selectedOrder?.vendor && (
+                          <div className="pt-3 border-t border-gray-300">
+                            <h5 className="text-sm font-semibold text-gray-800 mb-2">
+                              Vendor Pricing
+                            </h5>
+                            <div className="bg-white p-4 border border-gray-200 rounded-xl shadow-sm">
+                              <VendorPriceTable order={selectedOrder} />
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Customer Group Section */}
-                      <div className="bg-blue-100 p-3 rounded-lg border border-gray-200 shadow-sm">
+                      <div className="bg-blue-100 p-4 rounded-lg border border-gray-200 shadow-sm">
                         <h4 className="text-sm font-semibold text-gray-800 border-b pb-1 mb-2">
                           Customer Group
                         </h4>

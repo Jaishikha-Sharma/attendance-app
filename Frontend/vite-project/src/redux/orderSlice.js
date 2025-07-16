@@ -191,6 +191,29 @@ export const updateCustomerGroupLink = createAsyncThunk(
     }
   }
 );
+// 💰 Update vendor price thunk
+export const updateVendorPrice = createAsyncThunk(
+  "order/updateVendorPrice",
+  async ({ orderId, vendorAmount }, { rejectWithValue, getState }) => {
+    try {
+      const { auth } = getState();
+      const res = await axios.patch(
+        `${ORDER_API}/${orderId}/update-vendor-price`,
+        { vendorAmount },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }
+      );
+      return res.data.order;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || "Failed to update vendor price"
+      );
+    }
+  }
+);
 
 const orderSlice = createSlice({
   name: "order",
@@ -345,6 +368,22 @@ const orderSlice = createSlice({
         );
       })
       .addCase(updateCustomerGroupLink.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // 💰 Update vendor price
+      .addCase(updateVendorPrice.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateVendorPrice.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.orders = state.orders.map((order) =>
+          order._id === action.payload._id ? action.payload : order
+        );
+      })
+      .addCase(updateVendorPrice.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
