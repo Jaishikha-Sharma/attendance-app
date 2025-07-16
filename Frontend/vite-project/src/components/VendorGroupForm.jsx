@@ -96,7 +96,7 @@ const VendorGroupForm = ({ vendorGroupLink = "", onSave }) => {
             onClick={() => setEditing(true)}
             className="text-indigo-600 text-xs font-medium hover:underline"
           >
-            ➕ Add Link
+            Add Link
           </button>
         </div>
       )}

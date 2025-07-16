@@ -226,10 +226,10 @@ const OrderForm = () => {
             required
           >
             <option value="">Select Type</option>
-            <option value="handmade">Handmade</option>
-            <option value="digital">Digital</option>
-            <option value="both">Both</option>
-            <option value="other">Other</option>
+            <option value="Handmade">Handmade</option>
+            <option value="Digital">Digital</option>
+            <option value="Both">Both</option>
+            <option value="Other">Other</option>
           </select>
         </div>
 
@@ -246,9 +246,9 @@ const OrderForm = () => {
             required
           >
             <option value="">Select Purpose</option>
-            <option value="school">School</option>
-            <option value="college">College</option>
-            <option value="corporate">Corporate</option>
+            <option value="School">School</option>
+            <option value="College">College</option>
+            <option value="Corporate">Corporate</option>
           </select>
         </div>
 

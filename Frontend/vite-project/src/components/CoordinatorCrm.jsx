@@ -248,15 +248,16 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                           : "Undelivered"}
                       </span>
 
-                      {selectedOrder.dueAmount === 0 && (
-                        <button
-                          onClick={() => setIsStatusModalOpen(true)}
-                          className="p-1 rounded hover:bg-indigo-100 text-indigo-600 hover:text-indigo-800 transition"
-                          aria-label="Edit Status"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                      )}
+                      {selectedOrder.dueAmount === 0 &&
+                        selectedOrder.deliveryStatus !== "Delivered" && (
+                          <button
+                            onClick={() => setIsStatusModalOpen(true)}
+                            className="p-1 rounded hover:bg-indigo-100 text-indigo-600 hover:text-indigo-800 transition"
+                            aria-label="Edit Status"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                        )}
                     </p>
                   </div>
 
@@ -365,7 +366,7 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                     </p>
 
                     <p className="text-sm text-gray-700">
-                      <span className="font-medium text-gray-800">Type:</span>{" "}
+                      <span className="font-medium text-gray-800">Project Type:</span>{" "}
                       {selectedOrder.projectType}
                     </p>
 
