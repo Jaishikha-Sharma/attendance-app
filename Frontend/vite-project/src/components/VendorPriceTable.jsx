@@ -4,42 +4,60 @@ import { updateVendorPrice } from "../redux/orderSlice";
 
 const VendorPriceTable = ({ order }) => {
   const dispatch = useDispatch();
-  const [vendorPrice, setVendorPrice] = useState("");
 
-  // Set initial price when component mounts or order changes
+  // Maintain a price per vendor
+  const [vendorPrices, setVendorPrices] = useState({});
+
+  // Set initial prices when order changes
   useEffect(() => {
-    if (order?.vendorAmount) {
-      setVendorPrice(order.vendorAmount.toString());
+    if (order?.vendors?.length) {
+      const initialPrices = {};
+      order.vendors.forEach((vendor) => {
+        initialPrices[vendor] = order.vendorAmount || "";
+      });
+      setVendorPrices(initialPrices);
     }
   }, [order]);
+
+  const handleChange = (vendorName, value) => {
+    setVendorPrices((prev) => ({
+      ...prev,
+      [vendorName]: value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!vendorPrice || isNaN(vendorPrice)) {
-      alert("Please enter a valid price");
-      return;
-    }
-
-    try {
-      const action = await dispatch(
-        updateVendorPrice({
-          orderId: order._id,
-          vendorAmount: Number(vendorPrice),
-        })
-      );
-
-      const updatedOrder = action.payload?.order;
-
-      if (updatedOrder?.vendorAmount) {
-        setVendorPrice(updatedOrder.vendorAmount.toString()); // ✅ update input with new price
+    // Optional: Loop through all vendors if you support per-vendor pricing
+    for (const vendorName of order.vendors || []) {
+      const price = vendorPrices[vendorName];
+      if (!price || isNaN(price)) {
+        alert(`Invalid price for ${vendorName}`);
+        return;
       }
 
-      alert("Vendor price updated successfully");
-    } catch (error) {
-      console.error("Error updating vendor price:", error);
-      alert("Failed to update price");
+      try {
+        const action = await dispatch(
+          updateVendorPrice({
+            orderId: order._id,
+            vendorAmount: Number(price), // adjust if you later allow per-vendor prices
+          })
+        );
+
+        if (action.payload?.order?.vendorAmount) {
+          setVendorPrices((prev) => ({
+            ...prev,
+            [vendorName]: action.payload.order.vendorAmount.toString(),
+          }));
+        }
+      } catch (error) {
+        console.error("Error updating vendor price:", error);
+        alert(`Failed to update price for ${vendorName}`);
+      }
     }
+
+    alert("Vendor prices updated successfully");
   };
 
   return (
@@ -61,21 +79,26 @@ const VendorPriceTable = ({ order }) => {
               </tr>
             </thead>
             <tbody>
-              <tr className="bg-white hover:bg-gray-50 transition">
-                <td className="border px-4 py-2 font-medium">
-                  {order.vendor || "Not Assigned"}
-                </td>
-                <td className="border px-4 py-2">
-                  <input
-                    type="number"
-                    value={vendorPrice}
-                    onChange={(e) => setVendorPrice(e.target.value)}
-                    placeholder="e.g. 1000"
-                    className="border border-gray-300 rounded-md px-3 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </td>
-              </tr>
+              {(order.vendors || []).map((vendor) => (
+                <tr
+                  key={vendor}
+                  className="bg-white hover:bg-gray-50 transition"
+                >
+                  <td className="border px-4 py-2 font-medium">{vendor}</td>
+                  <td className="border px-4 py-2">
+                    <input
+                      type="number"
+                      value={vendorPrices[vendor] || ""}
+                      onChange={(e) =>
+                        handleChange(vendor, e.target.value)
+                      }
+                      placeholder="e.g. 1000"
+                      className="border border-gray-300 rounded-md px-3 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

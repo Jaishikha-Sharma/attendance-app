@@ -3,7 +3,7 @@ import {
   createOrder,
   getProjectCoordinators,
   getCoordinatorOrders,
-  assignVendorToOrder,
+  assignVendorsToOrder,
   updateDueAmount,
   updateInstitution,
   getVendorOrders,
@@ -19,7 +19,7 @@ const router = express.Router();
 router.post("/create", protect, createOrder);
 router.get("/project-coordinators", getProjectCoordinators);
 router.get("/my-orders", protect, getCoordinatorOrders);
-router.patch("/:id/assign-vendor", protect, assignVendorToOrder);
+router.patch("/:id/assign-vendor", protect, assignVendorsToOrder);
 router.patch("/:id/update-due", protect, updateDueAmount);
 router.put("/orders/:id/institution", updateInstitution);
 router.get("/my-vendor-orders", protect, getVendorOrders);

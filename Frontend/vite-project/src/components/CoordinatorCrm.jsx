@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Dialog, Transition } from "@headlessui/react";
 import { X, Pencil, Eye } from "lucide-react";
 import { fetchCoordinatorOrders } from "../redux/orderSlice";
-import { assignVendor } from "../redux/orderSlice";
+import { assignVendors } from "../redux/orderSlice";
 import { fetchFreelancers } from "../redux/freelancerSlice";
 import VendorDetailModal from "./VendorDetailModal";
 import AssignVendorModal from "./AssignVendorModal";
@@ -85,7 +85,11 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                     #{order.orderNo || order._id.slice(-5).toUpperCase()}
                   </td>
                   <td className="px-4 py-3">{order.customerName}</td>
-                  <td className="px-4 py-3">{order.vendor || "N/A"}</td>
+                  <td className="px-4 py-3">
+                    {order.vendors?.length > 0
+                      ? order.vendors.join(", ")
+                      : "Not Assigned"}
+                  </td>
                   <td className="px-4 py-3">{order.topic}</td>
                   <td className="px-4 py-3">
                     {order.deadline &&
@@ -153,9 +157,12 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
               {order.customerName}
             </p>
             <p className="text-xs text-gray-600">
-              <span className="font-medium text-gray-800">Vendor:</span>{" "}
-              {order.vendor || "N/A"}
+              <span className="font-medium text-gray-800">Vendors:</span>{" "}
+              {order.vendors?.length > 0
+                ? order.vendors.join(", ")
+                : "Not Assigned"}
             </p>
+
             <p className="text-xs text-gray-600">
               <span className="font-medium text-gray-800">Topic:</span>{" "}
               {order.topic}
@@ -440,13 +447,16 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                       <span className="font-medium">Vendor:</span>
                       <span
                         className={`${
-                          !selectedOrder.vendor
+                          !selectedOrder.vendors?.length
                             ? "animate-pulse text-red-600 font-semibold"
                             : "text-gray-700"
                         }`}
                       >
-                        {selectedOrder.vendor || "Not Assigned"}
+                        {selectedOrder.vendors?.length > 0
+                          ? selectedOrder.vendors.join(", ")
+                          : "Not Assigned"}
                       </span>
+
                       <button
                         onClick={() => {
                           setVendorName(selectedOrder.vendor || "");
@@ -480,7 +490,7 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                         </div>
 
                         {/* Separated Vendor Price Table */}
-                        {selectedOrder?.vendor && (
+                        {selectedOrder?.vendors?.length > 0 && (
                           <div className="pt-3 border-t border-gray-300">
                             <h5 className="text-sm font-semibold text-gray-800 mb-2">
                               Vendor Pricing
@@ -522,7 +532,7 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
               vendorName={vendorName}
               setVendorName={setVendorName}
               dispatch={dispatch}
-              assignVendor={assignVendor}
+              assignVendors={assignVendors}
               setShowVendorDetailModal={setShowVendorDetailModal}
               setSelectedFreelancer={setSelectedFreelancer}
             />

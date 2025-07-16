@@ -35,9 +35,9 @@ export const getCoordinatorOrders = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch orders" });
   }
 };
-export const assignVendorToOrder = async (req, res) => {
+export const assignVendorsToOrder = async (req, res) => {
   try {
-    const { vendor } = req.body; // vendor will be a name or ID
+    const { vendors } = req.body; // 🆕 array of vendor names (strings)
     const orderId = req.params.id;
 
     const order = await Order.findById(orderId);
@@ -45,15 +45,16 @@ export const assignVendorToOrder = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    order.vendor = vendor; // Just updating vendor field
+    order.vendors = vendors; // 🆕 assign array
     await order.save();
 
-    res.status(200).json({ message: "Vendor assigned successfully", order });
+    res.status(200).json({ message: "Vendors assigned successfully", order });
   } catch (error) {
-    console.error("Error assigning vendor:", error);
-    res.status(500).json({ message: "Failed to assign vendor" });
+    console.error("Error assigning vendors:", error);
+    res.status(500).json({ message: "Failed to assign vendors" });
   }
 };
+
 export const updateDueAmount = async (req, res) => {
   try {
     let { paidAmount, paymentMode, paymentDate } = req.body;
@@ -114,8 +115,10 @@ export const updateInstitution = async (req, res) => {
 };
 export const getVendorOrders = async (req, res) => {
   try {
-    const freelancerName = req.user.name; // assuming vendor = freelancer name
-    const orders = await Order.find({ vendor: freelancerName })
+    const freelancerName = req.user.name; // logged-in vendor's name
+
+    // 🆕 Match freelancerName inside vendors array
+    const orders = await Order.find({ vendors: freelancerName })
       .sort({ createdAt: -1 })
       .populate("assignedBy", "name")
       .populate("projectCoordinator", "name");
@@ -126,6 +129,7 @@ export const getVendorOrders = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch vendor orders" });
   }
 };
+
 export const updateVendorGroupLink = async (req, res) => {
   try {
     const orderId = req.params.id;

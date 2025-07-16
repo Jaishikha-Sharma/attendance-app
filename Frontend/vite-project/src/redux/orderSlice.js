@@ -19,15 +19,15 @@ export const createOrder = createAsyncThunk(
     }
   }
 );
-// ✏️ Assign vendor to order
-export const assignVendor = createAsyncThunk(
-  "order/assignVendor",
-  async ({ orderId, vendorName }, { rejectWithValue, getState }) => {
+
+export const assignVendors = createAsyncThunk(
+  "order/assignVendors",
+  async ({ orderId, vendors }, { rejectWithValue, getState }) => {
     try {
       const { auth } = getState();
       const res = await axios.patch(
-        `${ORDER_API}/${orderId}/assign-vendor`,
-        { vendor: vendorName },
+        `${ORDER_API}/${orderId}/assign-vendor`, // ✅ correct route
+        { vendors }, 
         {
           headers: {
             Authorization: `Bearer ${auth.token}`,
@@ -40,6 +40,7 @@ export const assignVendor = createAsyncThunk(
     }
   }
 );
+
 export const updateDueAmount = createAsyncThunk(
   "order/updateDueAmount",
   async (
@@ -265,23 +266,23 @@ const orderSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // ✏️ Assign vendor to order
-      .addCase(assignVendor.pending, (state) => {
+      // ✏️ Assign multiple vendors to order
+      .addCase(assignVendors.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(assignVendor.fulfilled, (state, action) => {
+      .addCase(assignVendors.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        // Update vendor inside orders list
         state.orders = state.orders.map((order) =>
           order._id === action.payload._id ? action.payload : order
         );
       })
-      .addCase(assignVendor.rejected, (state, action) => {
+      .addCase(assignVendors.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+
       .addCase(updateDueAmount.pending, (state) => {
         state.loading = true;
         state.error = null;

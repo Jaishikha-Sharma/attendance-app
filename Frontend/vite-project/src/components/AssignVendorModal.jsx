@@ -1,20 +1,28 @@
 import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { Info, Search, CheckCircle } from "lucide-react";
+import { fetchCoordinatorOrders } from "../redux/orderSlice"; // ✅ ADD THIS
 
 const AssignVendorModal = ({
   isOpen,
   onClose,
   freelancers = [],
   selectedOrder,
-  vendorName,
-  setVendorName,
   dispatch,
-  assignVendor,
+  assignVendors,
   setShowVendorDetailModal,
   setSelectedFreelancer,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedVendors, setSelectedVendors] = useState([]);
+
+  const toggleVendor = (vendorName) => {
+    setSelectedVendors((prev) =>
+      prev.includes(vendorName)
+        ? prev.filter((v) => v !== vendorName)
+        : [...prev, vendorName]
+    );
+  };
 
   const filteredFreelancers = freelancers.filter((freelancer) => {
     const fields = [
@@ -39,7 +47,7 @@ const AssignVendorModal = ({
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full">
           <Dialog.Title className="text-xl font-semibold text-indigo-700 mb-5 flex items-center gap-2">
-            Assign Vendor
+            Assign Vendors
           </Dialog.Title>
 
           {/* Search Box */}
@@ -57,40 +65,43 @@ const AssignVendorModal = ({
           {/* Freelancer List */}
           <div className="space-y-2 max-h-64 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
             {filteredFreelancers.length > 0 ? (
-              filteredFreelancers.map((freelancer) => (
-                <div
-                  key={freelancer._id}
-                  className={`flex items-center justify-between px-4 py-2 rounded-md border transition cursor-pointer ${
-                    vendorName === freelancer.name
-                      ? "bg-indigo-100 border-indigo-500"
-                      : "bg-gray-50 hover:bg-indigo-50 border-gray-200"
-                  }`}
-                  onClick={() => setVendorName(freelancer.name)}
-                >
-                  <div className="text-sm font-medium text-gray-800">
-                    {freelancer.name}{" "}
-                    <span className="text-xs text-gray-500">
-                      ({freelancer.email})
-                    </span>
+              filteredFreelancers.map((freelancer) => {
+                const isSelected = selectedVendors.includes(freelancer.name);
+                return (
+                  <div
+                    key={freelancer._id}
+                    className={`flex items-center justify-between px-4 py-2 rounded-md border transition cursor-pointer ${
+                      isSelected
+                        ? "bg-indigo-100 border-indigo-500"
+                        : "bg-gray-50 hover:bg-indigo-50 border-gray-200"
+                    }`}
+                    onClick={() => toggleVendor(freelancer.name)}
+                  >
+                    <div className="text-sm font-medium text-gray-800">
+                      {freelancer.name}{" "}
+                      <span className="text-xs text-gray-500">
+                        ({freelancer.email})
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {isSelected && (
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedFreelancer(freelancer);
+                          setShowVendorDetailModal(true);
+                        }}
+                        className="text-indigo-600 hover:text-indigo-800 transition"
+                        title="View Details"
+                      >
+                        <Info className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {vendorName === freelancer.name && (
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                    )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedFreelancer(freelancer);
-                        setShowVendorDetailModal(true);
-                      }}
-                      className="text-indigo-600 hover:text-indigo-800 transition"
-                      title="View Details"
-                    >
-                      <Info className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="text-center text-gray-500 py-4 text-sm">
                 No matching vendors
@@ -107,20 +118,21 @@ const AssignVendorModal = ({
               Cancel
             </button>
             <button
-              onClick={() => {
-                if (vendorName.trim()) {
-                  dispatch(
-                    assignVendor({
+              onClick={async () => {
+                if (selectedVendors.length > 0) {
+                  await dispatch(
+                    assignVendors({
                       orderId: selectedOrder._id,
-                      vendorName,
+                      vendors: selectedVendors,
                     })
                   );
+                  await dispatch(fetchCoordinatorOrders()); // ✅ REFRESH TABLE DATA
                   onClose();
                 }
               }}
               className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
             >
-              Save
+              Assign {selectedVendors.length > 0 ? `(${selectedVendors.length})` : ""}
             </button>
           </div>
         </Dialog.Panel>

@@ -23,13 +23,13 @@ const orderSchema = new mongoose.Schema(
     advanceAmount: Number,
     deliveryStatus: {
       type: String,
-      enum: ["UnDelivered", "Delivered", "Pending" , "In-Transit"],
+      enum: ["UnDelivered", "Delivered", "Pending", "In-Transit"],
       default: "Pending",
     },
 
-    vendor: {
-      type: String,
-      default: "",
+    vendors: {
+      type: [String],
+      default: [],
     },
 
     orderNo: {
