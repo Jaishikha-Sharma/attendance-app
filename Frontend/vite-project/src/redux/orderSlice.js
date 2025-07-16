@@ -293,6 +293,7 @@ const orderSlice = createSlice({
           order._id === action.payload._id ? action.payload : order
         );
       })
+
       .addCase(updateDueAmount.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

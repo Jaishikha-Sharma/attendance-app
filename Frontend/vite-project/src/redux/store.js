@@ -7,6 +7,7 @@ import leadReducer from "./leadSlice";
 import orderReducer from "./orderSlice";
 import freelanceAttendanceReducer from "./freelanceAttendanceSlice";
 import freelancerReducer from "./freelancerSlice";
+import manualPunchReducer from "./manualPunchSlice";
 
 const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ const store = configureStore({
     order: orderReducer,
     freelancerAttendance: freelanceAttendanceReducer,
     freelancers: freelancerReducer,
+    manualPunch: manualPunchReducer,
   },
 });
 

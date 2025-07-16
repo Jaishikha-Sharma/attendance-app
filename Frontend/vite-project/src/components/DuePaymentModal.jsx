@@ -13,7 +13,7 @@ const DuePaymentModal = ({
   const [duePaid, setDuePaid] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
-  const [updateCount, setUpdateCount] = useState(0); // ✅ Track update attempts
+  const [updateCount, setUpdateCount] = useState(0); 
 
   const handleSubmit = async () => {
     const duePaidAmount = Number(duePaid);

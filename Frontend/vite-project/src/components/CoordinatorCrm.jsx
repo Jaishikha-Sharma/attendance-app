@@ -405,7 +405,8 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                     </p>
                     <p className="flex items-center gap-2 mt-2">
                       <span className="font-medium">Due Amount:</span> ₹
-                      {selectedOrder?.dueAmount ?? 0}
+                      {(selectedOrder?.sellingPrice ?? 0) -
+                        (selectedOrder?.advanceAmount ?? 0)}
                       <button
                         onClick={() => setIsDueModalOpen(true)}
                         className="text-indigo-600 hover:text-indigo-800"
@@ -413,6 +414,7 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
                         <Pencil className="w-4 h-4" />
                       </button>
                     </p>
+
                     <p>
                       <span className="font-medium">Due Amount Date:</span>{" "}
                       {selectedOrder?.duePaymentDate
@@ -539,12 +541,6 @@ const CoordinatorCrm = ({ selectedOrder, setSelectedOrder }) => {
         currentDue={selectedOrder?.dueAmount}
         dispatch={dispatch}
         updateDueAmount={updateDueAmount}
-        onDueUpdate={(newDue) =>
-          setSelectedOrder((prev) => ({
-            ...prev,
-            dueAmount: newDue,
-          }))
-        }
       />
       <DeliveryStatusModal
         isOpen={isStatusModalOpen}

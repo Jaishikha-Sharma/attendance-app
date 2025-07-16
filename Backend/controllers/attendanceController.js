@@ -1,5 +1,6 @@
 import Attendance from "../models/Attendance.js";
 import User from "../models/User.js";
+import ManualPunchRequest from "../models/ManualPunchRequest.js";
 
 // ===== PUNCH IN CONTROLLER =====
 export const punchIn = async (req, res) => {
@@ -53,9 +54,6 @@ export const punchIn = async (req, res) => {
         });
       }
     }
-
-    // Rule 4: Project Coordinator – 9:00 AM to 3:00 PM
-    // ✅ Extract auto flag
     const isAuto = req.headers["x-auto-punch"] === "true";
 
     // Rule 4: Project Coordinator – 9:00 AM to 3:00 PM (unless auto punch)
@@ -269,3 +267,126 @@ export const getUserPunchHistory = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch attendance history" });
   }
 };
+export const requestManualPunchIn = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { requestedDate, requestedTime, reason } = req.body;
+
+    // Validate
+    if (!requestedDate || !requestedTime) {
+      return res.status(400).json({ message: "Date and time are required" });
+    }
+
+    // Check if already exists for same date
+    const existing = await ManualPunchRequest.findOne({
+      userId,
+      requestedDate,
+      status: { $in: ["Pending", "Approved"] },
+    });
+
+    if (existing) {
+      return res
+        .status(400)
+        .json({ message: "Request already exists for this date" });
+    }
+
+    const newRequest = new ManualPunchRequest({
+      userId,
+      requestedDate,
+      requestedTime,
+      reason,
+    });
+
+    await newRequest.save();
+
+    res.status(201).json({
+      message: "Manual punch-in request submitted",
+      request: newRequest,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to submit request" });
+  }
+};
+export const getManualPunchRequests = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || (user.role !== "HR" && user.role !== "Admin")) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const requests = await ManualPunchRequest.find()
+      .sort({ createdAt: -1 })
+      .populate("userId", "name email role");
+
+    res.status(200).json({ requests });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch requests" });
+  }
+};
+export const approveManualPunchRequest = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || (user.role !== "HR" && user.role !== "Admin")) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const { id } = req.params;
+    const request = await ManualPunchRequest.findById(id).populate("userId");
+
+    if (!request) return res.status(404).json({ message: "Request not found" });
+    if (request.status !== "Pending") {
+      return res.status(400).json({ message: "Request already processed" });
+    }
+
+    const date = request.requestedDate;
+    const time = request.requestedTime;
+    const [hours, minutes] = time.split(":").map(Number);
+
+    const punchInDate = new Date(date);
+    punchInDate.setHours(hours, minutes, 0, 0);
+
+    let attendance = await Attendance.findOne({ userId: request.userId._id, date });
+    if (!attendance) {
+      attendance = new Attendance({ userId: request.userId._id, date });
+    }
+
+    attendance.punchInTime = punchInDate;
+    attendance.status = "Present (Manual)";
+    await attendance.save();
+
+    request.status = "Approved";
+    await request.save();
+
+    res.status(200).json({ message: "Punch-in approved", attendance });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Approval failed" });
+  }
+};
+export const rejectManualPunchRequest = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || (user.role !== "HR" && user.role !== "Admin")) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const { id } = req.params;
+    const request = await ManualPunchRequest.findById(id);
+
+    if (!request) return res.status(404).json({ message: "Request not found" });
+    if (request.status !== "Pending") {
+      return res.status(400).json({ message: "Request already processed" });
+    }
+
+    request.status = "Rejected";
+    await request.save();
+
+    res.status(200).json({ message: "Punch-in request rejected" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Rejection failed" });
+  }
+};
+

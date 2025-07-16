@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import ManualPunchRequest from "../components/ManualPunchRequest";
 import {
   LogIn,
   LogOut,
@@ -188,6 +189,8 @@ const EmployeeDashboard = () => {
             { id: "dashboard", label: "Dashboard", icon: <UserCheck /> },
             { id: "leave", label: "Apply Leave", icon: <CalendarCheck /> },
             { id: "history", label: "My History", icon: <History /> },
+            { id: "manual", label: "Manual Punch-In", icon: <Clock /> },
+
           ].map(({ id, label, icon }) => (
             <button
               key={id}
@@ -341,6 +344,8 @@ const EmployeeDashboard = () => {
             </div>
           </>
         )}
+        {activeTab === "manual" && <ManualPunchRequest />}
+
 
         {(successMessage || error || message) && (
           <div className="mt-6 text-sm font-medium text-blue-600">
