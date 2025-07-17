@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  submitManualPunchRequest,
-  clearManualPunchMessages,
-} from "../redux/manualPunchSlice";
+import { submitManualPunchRequest } from "../redux/manualPunchSlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -30,8 +27,6 @@ const ManualPunchRequest = () => {
         token,
       })
     );
-
-    setTimeout(() => dispatch(clearManualPunchMessages()), 4000);
 
     setDate("");
     setTime("");
