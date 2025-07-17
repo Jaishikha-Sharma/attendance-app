@@ -28,13 +28,40 @@ export const approvePunchRequest = createAsyncThunk(
     try {
       const token = getState().auth.user?.token;
 
-      const res = await axios.put(`${ATTENDANCE_API}/manual-requests/${id}/approve`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.put(
+        `${ATTENDANCE_API}/manual-requests/${id}/approve`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       return res.data.updatedRequest;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Approval failed");
+    }
+  }
+);
+// ✅ Submit new manual punch request
+export const submitManualPunchRequest = createAsyncThunk(
+  "manualPunch/submit",
+  async (payload, { rejectWithValue, getState }) => {
+    try {
+      const token = getState().auth.user?.token;
+
+      const res = await axios.post(
+        `${ATTENDANCE_API}/manual-requests`,
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      return res.data.newRequest;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Submission failed"
+      );
     }
   }
 );
@@ -46,9 +73,13 @@ export const rejectPunchRequest = createAsyncThunk(
     try {
       const token = getState().auth.user?.token;
 
-      const res = await axios.put(`${ATTENDANCE_API}/manual-requests/${id}/reject`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.put(
+        `${ATTENDANCE_API}/manual-requests/${id}/reject`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       return res.data.updatedRequest;
     } catch (err) {
@@ -80,10 +111,26 @@ const manualPunchSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(approvePunchRequest.fulfilled, (state, action) => {
-        state.requests = state.requests.filter((r) => r._id !== action.payload._id);
+        state.requests = state.requests.filter(
+          (r) => r._id !== action.payload._id
+        );
       })
       .addCase(rejectPunchRequest.fulfilled, (state, action) => {
-        state.requests = state.requests.filter((r) => r._id !== action.payload._id);
+        state.requests = state.requests.filter(
+          (r) => r._id !== action.payload._id
+        );
+      })
+      .addCase(submitManualPunchRequest.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(submitManualPunchRequest.fulfilled, (state, action) => {
+        state.loading = false;
+        state.requests.push(action.payload); // or do nothing if you don't need to show it instantly
+      })
+      .addCase(submitManualPunchRequest.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
