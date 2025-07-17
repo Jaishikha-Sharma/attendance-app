@@ -18,7 +18,6 @@ const VendorPriceTable = ({ order, setSelectedOrder }) => {
     }
   }, [order]);
 
-  // Handle input change
   const handleChange = (vendorName, value) => {
     setVendorPrices((prev) => ({
       ...prev,
@@ -26,7 +25,6 @@ const VendorPriceTable = ({ order, setSelectedOrder }) => {
     }));
   };
 
-  // Save all vendor prices one by one
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -61,7 +59,6 @@ const VendorPriceTable = ({ order, setSelectedOrder }) => {
       }
     }
 
-    // ✅ Final update to selectedOrder in parent
     setSelectedOrder((prev) => ({
       ...prev,
       vendorPrices: {
@@ -73,6 +70,12 @@ const VendorPriceTable = ({ order, setSelectedOrder }) => {
     alert("✅ Vendor prices updated successfully");
     setIsSubmitting(false);
   };
+
+  // ✅ Total price calculation
+  const totalPrice = Object.values(vendorPrices).reduce(
+    (acc, val) => acc + (parseFloat(val) || 0),
+    0
+  );
 
   return (
     <div className="w-full">
@@ -111,9 +114,17 @@ const VendorPriceTable = ({ order, setSelectedOrder }) => {
                   </td>
                 </tr>
               ))}
+              <tr className="bg-gray-100 font-semibold">
+                <td className="border px-4 py-2 text-right">Total</td>
+                <td className="border px-4 py-2">₹ {totalPrice.toFixed(2)}</td>
+              </tr>
             </tbody>
           </table>
         </div>
+
+        <p className="text-xs text-gray-500 italic mt-1">
+          Note: Delivery charges excluded from the above prices.
+        </p>
 
         <div className="text-right">
           <button
