@@ -298,8 +298,7 @@ const HRDashboard = () => {
                 </div>
               ) : (
                 <div className="text-green-700 font-semibold">
-                  Regular timing: Punch in between 11:00AM–11:30AM. Auto after
-                  that.
+                  
                 </div>
               )}
             </div>
