@@ -5,24 +5,15 @@ import {
   updateFreelancerActionables,
 } from "../redux/freelancerSlice";
 
-import {
-  Loader2,
-  PencilLine,
-  Save,
-  AlertTriangle,
-  UserCircle2,
-  BadgeCheck,
-  Timer,
-  ListChecks,
-  Contact2,
-  Landmark,
-} from "lucide-react";
+import { Loader2, PencilLine, Save, AlertTriangle, X } from "lucide-react";
 
 const FreelancerTable = ({ token }) => {
   const dispatch = useDispatch();
   const { list, loading, error } = useSelector((state) => state.freelancers);
 
   const [editId, setEditId] = useState(null);
+  const [selectedFreelancer, setSelectedFreelancer] = useState(null);
+
   const [formData, setFormData] = useState({
     status: "",
     activityTime: "",
@@ -59,8 +50,8 @@ const FreelancerTable = ({ token }) => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-
+    <div className="p-6 bg-gray-50 min-h-screen relative">
+      {/* Table */}
       <div className="bg-white shadow-lg rounded-xl overflow-x-auto border border-gray-200">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100 text-gray-700 text-xs uppercase tracking-wider">
@@ -102,7 +93,8 @@ const FreelancerTable = ({ token }) => {
               list.map((freelancer) => (
                 <tr
                   key={freelancer._id}
-                  className="border-t hover:bg-gray-50 transition"
+                  className="border-t hover:bg-gray-50 cursor-pointer transition"
+                  onClick={() => setSelectedFreelancer(freelancer)}
                 >
                   <td className="px-4 py-3 text-gray-700">
                     {new Date(freelancer.timestamp).toLocaleString() || "-"}
@@ -195,7 +187,10 @@ const FreelancerTable = ({ token }) => {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <button
-                          onClick={() => handleEdit(freelancer)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(freelancer);
+                          }}
                           className="text-blue-600 hover:text-blue-800 flex items-center gap-1 justify-center text-sm"
                         >
                           <PencilLine size={16} /> Edit
@@ -209,6 +204,92 @@ const FreelancerTable = ({ token }) => {
           </tbody>
         </table>
       </div>
+
+      {/* Modal */}
+      {selectedFreelancer && (
+        <div className="fixed inset-0 backdrop-blur-md bg-white/30 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl w-[90%] max-w-xl relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setSelectedFreelancer(null)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-xl font-bold mb-4 text-indigo-700">
+              Freelancer Details
+            </h2>
+            <div className="space-y-2 text-sm">
+              <p>
+                <strong>Emp ID:</strong> {selectedFreelancer.empId}
+              </p>
+              <p>
+                <strong>Name:</strong> {selectedFreelancer.name}
+              </p>
+              <p>
+                <strong>Email:</strong> {selectedFreelancer.email}
+              </p>
+              <p>
+                <strong>Contact No:</strong> {selectedFreelancer.contactNo}
+              </p>
+              <p>
+                <strong>Department:</strong> {selectedFreelancer.department}
+              </p>
+              <p>
+                <strong>Role:</strong> {selectedFreelancer.role}
+              </p>
+              <p>
+                <strong>Status:</strong> {selectedFreelancer.status}
+              </p>
+              <p>
+                <strong>Activity Time:</strong>{" "}
+                {selectedFreelancer.activityTime}
+              </p>
+              <p>
+                <strong>Aadhaar:</strong> {selectedFreelancer.aadhaarCardNumber}
+              </p>
+              <p>
+                <strong>PAN:</strong> {selectedFreelancer.panCardNumber}
+              </p>
+              <p>
+                <strong>Tags:</strong>{" "}
+                {selectedFreelancer.tags?.join(", ") || "-"}
+              </p>
+              <p>
+                <strong>State:</strong> {selectedFreelancer.state}
+              </p>
+              <p>
+                <strong>Stream:</strong> {selectedFreelancer.stream}
+              </p>
+              <p>
+                <strong>Course:</strong> {selectedFreelancer.course}
+              </p>
+              <p>
+                <strong>Address:</strong> {selectedFreelancer.address}
+              </p>
+              <p>
+                <strong>Joining Date:</strong>{" "}
+                {selectedFreelancer.joiningDate
+                  ? new Date(
+                      selectedFreelancer.joiningDate
+                    ).toLocaleDateString()
+                  : "-"}
+              </p>
+              <p>
+                <strong>DOB:</strong>{" "}
+                {selectedFreelancer.dob
+                  ? new Date(selectedFreelancer.dob).toLocaleDateString()
+                  : "-"}
+              </p>
+              <p>
+                <strong>Created At:</strong>{" "}
+                {selectedFreelancer.createdAt
+                  ? new Date(selectedFreelancer.createdAt).toLocaleString()
+                  : "-"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
