@@ -29,6 +29,7 @@ import {
 import axios from "axios";
 import { ATTENDANCE_API } from "../utils/Constant";
 import ManualApproval from "../components/ManualApproval";
+import FreelancerTable from "../components/FreelancerTable";
 
 const COLORS = [
   "#8884d8",
@@ -250,6 +251,17 @@ const HRDashboard = () => {
             <Clock className="w-5 h-5" />
             {!collapsed && <span>Manual Approvals</span>}
           </button>
+          <button
+            onClick={() => setActiveTab("freelancers")}
+            className={`w-full flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200 ${
+              activeTab === "freelancers"
+                ? "bg-indigo-900 text-white"
+                : "hover:bg-indigo-600 text-white"
+            }`}
+          >
+            <Users className="w-5 h-5" />
+            {!collapsed && <span>Freelancers</span>}
+          </button>
         </nav>
       </div>
 
@@ -269,147 +281,166 @@ const HRDashboard = () => {
 
         {/* Role-based Info */}
         <div className="mb-4">
-          {user?.role === "Admin" ? (
-            <div className="text-red-500 font-semibold">
-              Admin does not need to punch in/out.
-            </div>
-          ) : user?.role === "Freelancer" && new Date().getDay() !== 0 ? (
-            <div className="text-yellow-600 font-semibold">
-              Freelancers can punch in manually only on Sundays.
-            </div>
-          ) : user?.role === "Project Coordinator" ? (
-            <div className="text-blue-600 font-semibold">
-              Project Coordinators punch in between 9AM–3PM, punch out after
-              9PM.
-            </div>
-          ) : (
-            <div className="text-green-700 font-semibold">
-              Regular timing: Punch in between 11:00AM–11:30AM. Auto after that.
-            </div>
-          )}
-        </div>
-
-        {/* Punch In/Out Section */}
-        <div className="mb-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <button
-              onClick={handlePunchIn}
-              disabled={isPunchedIn || !isPunchAllowedNow()}
-              className={`flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-white font-semibold shadow transition-all duration-300 ${
-                isPunchedIn || !isPunchAllowedNow()
-                  ? "bg-green-300 cursor-not-allowed"
-                  : "bg-green-600 hover:bg-green-700"
-              }`}
-            >
-              <LogIn className="w-5 h-5" />
-              Punch In
-            </button>
-
-            <button
-              onClick={handlePunchOut}
-              disabled={!isPunchedIn}
-              className={`flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-white font-semibold shadow transition-all duration-300 ${
-                !isPunchedIn
-                  ? "bg-red-300 cursor-not-allowed"
-                  : "bg-red-600 hover:bg-red-700"
-              }`}
-            >
-              <LogOut className="w-5 h-5" />
-              Punch Out
-            </button>
-          </div>
-
-          {isPunchedIn && (
-            <div className="flex items-center gap-2 text-indigo-700 mt-2">
-              <Clock className="w-5 h-5 animate-pulse" />
-              <span>Total Time:</span>
-              <span className="font-mono font-semibold">{timer}</span>
+          {activeTab === "dashboard" && (
+            <div className="mb-4">
+              {user?.role === "Admin" ? (
+                <div className="text-red-500 font-semibold">
+                  Admin does not need to punch in/out.
+                </div>
+              ) : user?.role === "Freelancer" && new Date().getDay() !== 0 ? (
+                <div className="text-yellow-600 font-semibold">
+                  Freelancers can punch in manually only on Sundays.
+                </div>
+              ) : user?.role === "Project Coordinator" ? (
+                <div className="text-blue-600 font-semibold">
+                  Project Coordinators punch in between 9AM–3PM, punch out after
+                  9PM.
+                </div>
+              ) : (
+                <div className="text-green-700 font-semibold">
+                  Regular timing: Punch in between 11:00AM–11:30AM. Auto after
+                  that.
+                </div>
+              )}
             </div>
           )}
         </div>
+        {activeTab === "dashboard" && (
+          <div className="mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <button
+                onClick={handlePunchIn}
+                disabled={isPunchedIn || !isPunchAllowedNow()}
+                className={`flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-white font-semibold shadow transition-all duration-300 ${
+                  isPunchedIn || !isPunchAllowedNow()
+                    ? "bg-green-300 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700"
+                }`}
+              >
+                <LogIn className="w-5 h-5" />
+                Punch In
+              </button>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <StatCard
-            title="Total Employees"
-            value={summary?.totalEmployees}
-            Icon={Users}
-            color="border-indigo-500"
-          />
-          <StatCard
-            title="On Leave Today"
-            value={summary?.onLeave}
-            Icon={BedDouble}
-            color="border-yellow-400"
-          />
-          <StatCard
-            title="Present Today"
-            value={summary?.presentToday}
-            Icon={CheckCircle2}
-            color="border-green-500"
-          />
-          <StatCard
-            title="Pending Leaves"
-            value={summary?.pendingLeaves}
-            Icon={MailWarning}
-            color="border-red-500"
-          />
-        </div>
+              <button
+                onClick={handlePunchOut}
+                disabled={!isPunchedIn}
+                className={`flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-white font-semibold shadow transition-all duration-300 ${
+                  !isPunchedIn
+                    ? "bg-red-300 cursor-not-allowed"
+                    : "bg-red-600 hover:bg-red-700"
+                }`}
+              >
+                <LogOut className="w-5 h-5" />
+                Punch Out
+              </button>
+            </div>
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h3 className="text-lg font-bold mb-2">Daily Attendance</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={summary?.dailyAttendance}>
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="present" fill="#4f46e5" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {isPunchedIn && (
+              <div className="flex items-center gap-2 text-indigo-700 mt-2">
+                <Clock className="w-5 h-5 animate-pulse" />
+                <span>Total Time:</span>
+                <span className="font-mono font-semibold">{timer}</span>
+              </div>
+            )}
           </div>
-          <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h3 className="text-lg font-bold mb-2">Leave Trends</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={summary?.leaveTrends}>
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="leaves"
-                  stroke="#facc15"
-                  strokeWidth={3}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h3 className="text-lg font-bold mb-2">Department Split</h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={summary?.deptData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={70}
-                  label
-                >
-                  {summary?.deptData?.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
+        )}
+
+        {activeTab === "dashboard" && (
+          <>
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              <StatCard
+                title="Total Employees"
+                value={summary?.totalEmployees}
+                Icon={Users}
+                color="border-indigo-500"
+              />
+              <StatCard
+                title="On Leave Today"
+                value={summary?.onLeave}
+                Icon={BedDouble}
+                color="border-yellow-400"
+              />
+              <StatCard
+                title="Present Today"
+                value={summary?.presentToday}
+                Icon={CheckCircle2}
+                color="border-green-500"
+              />
+              <StatCard
+                title="Pending Leaves"
+                value={summary?.pendingLeaves}
+                Icon={MailWarning}
+                color="border-red-500"
+              />
+            </div>
+
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="bg-white p-6 rounded-2xl shadow-md">
+                <h3 className="text-lg font-bold mb-2">Daily Attendance</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={summary?.dailyAttendance}>
+                    <XAxis dataKey="day" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar
+                      dataKey="present"
+                      fill="#4f46e5"
+                      radius={[4, 4, 0, 0]}
                     />
-                  ))}
-                </Pie>
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="bg-white p-6 rounded-2xl shadow-md">
+                <h3 className="text-lg font-bold mb-2">Leave Trends</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={summary?.leaveTrends}>
+                    <XAxis dataKey="day" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line
+                      type="monotone"
+                      dataKey="leaves"
+                      stroke="#facc15"
+                      strokeWidth={3}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="bg-white p-6 rounded-2xl shadow-md">
+                <h3 className="text-lg font-bold mb-2">Department Split</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie
+                      data={summary?.deptData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={70}
+                      label
+                    >
+                      {summary?.deptData?.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </>
+        )}
+        {activeTab === "manual-approvals" && (
+          <div className="mt-8">
+            <ManualApproval token={token} />
           </div>
-        </div>
+        )}
+        {activeTab === "freelancers" && <FreelancerTable token={token} />}
 
         {/* Message */}
         {(successMessage || error || message) && (

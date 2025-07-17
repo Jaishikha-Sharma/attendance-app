@@ -35,7 +35,6 @@ const userSchema = new mongoose.Schema({
   contactNo: { type: String },
   state: { type: String },
   joiningDate: { type: Date },
-  status: { type: String, enum: ["ACTIVE", "INACTIVE"], default: "ACTIVE" },
   dob: { type: Date },
   address: { type: String },
   stream: { type: String },
@@ -44,6 +43,18 @@ const userSchema = new mongoose.Schema({
   specialized: { type: String },
   alternateContact: { type: String },
   activityTime: { type: String },
+  status: {
+    type: String,
+    enum: ["ACTIVE", "INACTIVE", "Available", "Busy"],
+    default: "ACTIVE",
+  },
+  aadhaarCardNumber: { type: String },
+  panCardNumber: { type: String },
+  tags: {
+    type: [String],
+    default: [],
+  },
+  timestamp: { type: Date, default: Date.now },
 });
 
 const User = mongoose.model("User", userSchema);

@@ -107,7 +107,7 @@ const DuePaymentModal = ({
             />
 
             <p className="text-sm font-medium text-gray-700">
-              Remaining Due After Payment: ₹
+              Live Calculator
               {Number(currentDue) - (Number(duePaid) || 0)}
             </p>
 
