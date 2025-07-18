@@ -4,8 +4,16 @@ import {
   fetchFreelancers,
   updateFreelancerActionables,
 } from "../redux/freelancerSlice";
-
-import { Loader2, PencilLine, Save, AlertTriangle, X } from "lucide-react";
+import {
+  Loader2,
+  PencilLine,
+  Save,
+  AlertTriangle,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+} from "lucide-react";
 
 const FreelancerTable = ({ token }) => {
   const dispatch = useDispatch();
@@ -13,6 +21,8 @@ const FreelancerTable = ({ token }) => {
 
   const [editId, setEditId] = useState(null);
   const [selectedFreelancer, setSelectedFreelancer] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 10;
 
   const [formData, setFormData] = useState({
     status: "",
@@ -49,8 +59,27 @@ const FreelancerTable = ({ token }) => {
     setEditId(null);
   };
 
+  // Pagination logic
+  const totalPages = Math.ceil(list.length / recordsPerPage);
+  const currentRecords = list.slice(
+    (currentPage - 1) * recordsPerPage,
+    currentPage * recordsPerPage
+  );
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen relative">
+      {/* Create Vendor Button */}
+      <div className="mb-4 flex justify-end">
+        <a
+          href="https://forms.gle/f9GVf3BJfJfbVEyr8"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded flex items-center gap-2 text-sm"
+        >
+          <Plus size={16} /> Create Vendor
+        </a>
+      </div>
+
       {/* Table */}
       <div className="bg-white shadow-lg rounded-xl overflow-x-auto border border-gray-200">
         <table className="min-w-full text-sm">
@@ -83,14 +112,14 @@ const FreelancerTable = ({ token }) => {
                   {error}
                 </td>
               </tr>
-            ) : list.length === 0 ? (
+            ) : currentRecords.length === 0 ? (
               <tr>
                 <td colSpan="10" className="text-center py-6 text-gray-500">
                   No freelancers found.
                 </td>
               </tr>
             ) : (
-              list.map((freelancer) => (
+              currentRecords.map((freelancer) => (
                 <tr
                   key={freelancer._id}
                   className="border-t hover:bg-gray-50 cursor-pointer transition"
@@ -204,6 +233,31 @@ const FreelancerTable = ({ token }) => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {list.length > recordsPerPage && (
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="flex items-center gap-1 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+          >
+            <ChevronLeft size={18} /> Prev
+          </button>
+          <span className="text-sm font-medium text-gray-700">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className="flex items-center gap-1 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+          >
+            Next <ChevronRight size={18} />
+          </button>
+        </div>
+      )}
 
       {/* Modal */}
       {selectedFreelancer && (

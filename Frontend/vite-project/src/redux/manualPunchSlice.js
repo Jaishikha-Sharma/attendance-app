@@ -1,14 +1,13 @@
-// redux/manualPunchSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { ATTENDANCE_API } from "../utils/Constant";
 
-// ✅ Fetch all manual punch requests (token from state)
+// ✅ Fetch all manual punch requests
 export const fetchManualPunchRequests = createAsyncThunk(
   "manualPunch/fetchAll",
   async (_, { rejectWithValue, getState }) => {
     try {
-      const token = getState().auth.user?.token;
+      const token = getState().auth.token;
 
       const res = await axios.get(`${ATTENDANCE_API}/manual-requests`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -26,7 +25,7 @@ export const approvePunchRequest = createAsyncThunk(
   "manualPunch/approve",
   async ({ id }, { rejectWithValue, getState }) => {
     try {
-      const token = getState().auth.user?.token;
+      const token = getState().auth.token;
 
       const res = await axios.put(
         `${ATTENDANCE_API}/manual-requests/${id}/approve`,
@@ -42,12 +41,13 @@ export const approvePunchRequest = createAsyncThunk(
     }
   }
 );
+
 // ✅ Submit new manual punch request
 export const submitManualPunchRequest = createAsyncThunk(
   "manualPunch/submit",
   async (payload, { rejectWithValue, getState }) => {
     try {
-      const token = getState().auth.user?.token;
+      const token = getState().auth.token;
 
       const res = await axios.post(
         `${ATTENDANCE_API}/manual-requests`,
@@ -71,7 +71,7 @@ export const rejectPunchRequest = createAsyncThunk(
   "manualPunch/reject",
   async ({ id }, { rejectWithValue, getState }) => {
     try {
-      const token = getState().auth.user?.token;
+      const token = getState().auth.token;
 
       const res = await axios.put(
         `${ATTENDANCE_API}/manual-requests/${id}/reject`,
@@ -126,7 +126,7 @@ const manualPunchSlice = createSlice({
       })
       .addCase(submitManualPunchRequest.fulfilled, (state, action) => {
         state.loading = false;
-        state.requests.push(action.payload); // or do nothing if you don't need to show it instantly
+        state.requests.push(action.payload);
       })
       .addCase(submitManualPunchRequest.rejected, (state, action) => {
         state.loading = false;
