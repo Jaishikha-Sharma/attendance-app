@@ -86,8 +86,8 @@ const SalesDashboard = () => {
   };
 
   useEffect(() => {
-    if (activeTab === "history") fetchHistory();
-  }, [activeTab]);
+    fetchHistory();
+  }, []);
 
   const handlePunchIn = async () => {
     try {
@@ -208,15 +208,6 @@ const SalesDashboard = () => {
             {!collapsed && <span>Apply Leave</span>}
           </button>
           <button
-            onClick={() => setActiveTab("history")}
-            className={`w-full flex items-center gap-2 px-3 py-2 rounded-md ${
-              activeTab === "history" ? "bg-indigo-900" : "hover:bg-indigo-600"
-            }`}
-          >
-            <History className="w-5 h-5" />
-            {!collapsed && <span>My History</span>}
-          </button>
-          <button
             onClick={() => setActiveTab("crm")}
             className={`w-full flex items-center gap-2 px-3 py-2 rounded-md ${
               activeTab === "crm" ? "bg-indigo-900" : "hover:bg-indigo-600"
@@ -250,7 +241,9 @@ const SalesDashboard = () => {
         {activeTab === "dashboard" && (
           <>
             <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            {/* Punch Buttons */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <button
                 onClick={handlePunchIn}
                 disabled={isPunchedIn}
@@ -274,53 +267,22 @@ const SalesDashboard = () => {
                 <LogOut className="w-5 h-5" /> Punch Out
               </button>
             </div>
+
+            {/* Timer */}
             {isPunchedIn && (
-              <div className="flex items-center gap-2 mt-6 text-indigo-700">
+              <div className="flex items-center gap-2 text-indigo-700 mb-6">
                 <Clock className="w-5 h-5 animate-pulse" />
                 <span>Total Time:</span>
                 <span className="font-mono font-semibold">{timer}</span>
               </div>
             )}
-          </>
-        )}
 
-        {activeTab === "leave" && (
-          <>
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <CalendarCheck className="w-6 h-6 text-indigo-500" /> Apply for
-              Leave
+            {/* Attendance History Heading */}
+            <h2 className="text-2xl font-bold mb-4 mt-6 flex items-center gap-2">
+              <History className="w-6 h-6 text-indigo-500" /> Attendance History
             </h2>
-            <form onSubmit={handleLeaveSubmit} className="space-y-4 max-w-md">
-              <input
-                type="date"
-                value={leaveDate}
-                onChange={(e) => setLeaveDate(e.target.value)}
-                className="w-full border rounded-lg px-4 py-2"
-                required
-              />
-              <textarea
-                value={leaveReason}
-                onChange={(e) => setLeaveReason(e.target.value)}
-                className="w-full border rounded-lg px-4 py-2"
-                placeholder="Reason for leave..."
-                required
-              />
-              <button
-                type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold"
-              >
-                Submit Leave Request
-              </button>
-            </form>
-          </>
-        )}
 
-        {activeTab === "history" && (
-          <>
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <History className="w-6 h-6 text-indigo-500" /> My Attendance
-              History
-            </h2>
+            {/* Attendance Table */}
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white rounded-lg shadow">
                 <thead className="bg-indigo-100 text-indigo-700 text-left text-sm font-semibold">
@@ -374,6 +336,36 @@ const SalesDashboard = () => {
           </>
         )}
 
+        {activeTab === "leave" && (
+          <>
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+              <CalendarCheck className="w-6 h-6 text-indigo-500" /> Apply for
+              Leave
+            </h2>
+            <form onSubmit={handleLeaveSubmit} className="space-y-4 max-w-md">
+              <input
+                type="date"
+                value={leaveDate}
+                onChange={(e) => setLeaveDate(e.target.value)}
+                className="w-full border rounded-lg px-4 py-2"
+                required
+              />
+              <textarea
+                value={leaveReason}
+                onChange={(e) => setLeaveReason(e.target.value)}
+                className="w-full border rounded-lg px-4 py-2"
+                placeholder="Reason for leave..."
+                required
+              />
+              <button
+                type="submit"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold"
+              >
+                Submit Leave Request
+              </button>
+            </form>
+          </>
+        )}
         {activeTab === "crm" && <SalesCRM />}
 
         {activeTab === "order" && (
