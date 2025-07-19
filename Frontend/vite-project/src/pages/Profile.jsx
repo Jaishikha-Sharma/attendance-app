@@ -1,6 +1,7 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   User,
   Briefcase,
@@ -8,11 +9,41 @@ import {
   ShieldCheck,
   Building2,
   CalendarDays,
+  Edit3,
+  Save,
 } from "lucide-react";
+import { updateUserProfile } from "../redux/authSlice";
 
 const Profile = () => {
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    empId: user?.empId || "",
+    department: user?.department || "",
+    contactNo: user?.contactNo || "",
+    address: user?.address || "",
+    dob: user?.dob ? new Date(user.dob).toISOString().split("T")[0] : "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await dispatch(updateUserProfile(formData)).unwrap();
+      toast.success("Profile updated successfully!");
+      setEditMode(false);
+    } catch (error) {
+      toast.error("Update failed: " + error);
+    }
+  };
 
   const goToDashboard = () => {
     if (user?.role === "Employee" && user?.department === "Sales") {
@@ -54,35 +85,57 @@ const Profile = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700 text-[15px] px-4">
-          <div className="flex items-center gap-2">
-            <Mail className="w-5 h-5 text-indigo-500" />
-            <span className="font-medium">Email:</span> {user?.email}
-          </div>
-          <div className="flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-indigo-500" />
-            <span className="font-medium">Employee ID:</span> {user?.empId}
-          </div>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-indigo-500" />
-            <span className="font-medium">Role:</span> {user?.role}
-          </div>
-          <div className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-indigo-500" />
-            <span className="font-medium">Department:</span> {user?.department}
-          </div>
-          <div className="flex items-center gap-2">
-            <CalendarDays className="w-5 h-5 text-indigo-500" />
-            <span className="font-medium">Joined:</span>{" "}
-            {new Date(user?.createdAt).toDateString()}
-          </div>
+          {[
+            { label: "Name", icon: User, key: "name" },
+            { label: "Email", icon: Mail, key: "email" },
+            { label: "Employee ID", icon: Briefcase, key: "empId" },
+            { label: "Department", icon: Building2, key: "department" },
+            { label: "Contact No", icon: ShieldCheck, key: "contactNo" },
+            { label: "Address", icon: CalendarDays, key: "address" },
+            { label: "DOB", icon: CalendarDays, key: "dob", type: "date" },
+          ].map(({ label, icon: Icon, key, type = "text" }) => (
+            <div className="flex items-center gap-2" key={key}>
+              <Icon className="w-5 h-5 text-indigo-500" />
+              <span className="font-medium">{label}:</span>
+              {editMode ? (
+                <input
+                  type={type}
+                  name={key}
+                  value={formData[key]}
+                  onChange={handleChange}
+                  className="border-b border-indigo-300 focus:outline-none px-1 text-sm w-full"
+                />
+              ) : (
+                <span>{formData[key] || "—"}</span>
+              )}
+            </div>
+          ))}
         </div>
 
-        <div className="flex justify-center mt-10">
+        <div className="flex justify-center mt-10 gap-4">
           <button
             onClick={goToDashboard}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-8 rounded-xl font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-xl font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
           >
             Go to Dashboard
+          </button>
+          <button
+            onClick={editMode ? handleUpdate : () => setEditMode(true)}
+            className={`${
+              editMode
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-yellow-500 hover:bg-yellow-600"
+            } text-white py-3 px-6 rounded-xl font-semibold shadow-lg transition-all duration-300 transform hover:scale-105`}
+          >
+            {editMode ? (
+              <span className="flex items-center gap-2">
+                <Save className="w-4 h-4" /> Save
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <Edit3 className="w-4 h-4" /> Edit
+              </span>
+            )}
           </button>
         </div>
       </div>
