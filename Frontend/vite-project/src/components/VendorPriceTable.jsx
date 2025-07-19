@@ -25,39 +25,31 @@ const VendorPriceTable = ({ order, setSelectedOrder }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    for (const vendorName of order.vendors || []) {
-      const price = vendorPrices[vendorName];
-      if (price === "" || isNaN(price)) {
-        alert(`❌ Invalid price for ${vendorName}`);
-        setIsSubmitting(false);
-        return;
-      }
-
-      try {
-        const action = await dispatch(
-          updateVendorPrice({
-            orderId: order._id,
-            vendorName,
-            price: Number(price),
-          })
-        );
-
-        if (action.meta.requestStatus !== "fulfilled") {
-          alert(`❌ Failed to update price for ${vendorName}`);
-          setIsSubmitting(false);
-          return;
-        }
-      } catch (error) {
-        console.error("Error updating vendor price:", error);
-        alert(`❌ Error updating price for ${vendorName}`);
-        setIsSubmitting(false);
-        return;
-      }
+  const updates = order.vendors.map((vendorName) => {
+    const price = vendorPrices[vendorName];
+    if (price === "" || isNaN(price)) {
+      return Promise.reject(`Invalid price for ${vendorName}`);
     }
+
+    return dispatch(
+      updateVendorPrice({
+        orderId: order._id,
+        vendorName,
+        price: Number(price),
+      })
+    ).then((action) => {
+      if (action.meta.requestStatus !== "fulfilled") {
+        throw new Error(`Failed to update price for ${vendorName}`);
+      }
+    });
+  });
+
+  try {
+    await Promise.all(updates);
 
     setSelectedOrder((prev) => ({
       ...prev,
@@ -68,8 +60,13 @@ const VendorPriceTable = ({ order, setSelectedOrder }) => {
     }));
 
     alert("✅ Vendor prices updated successfully");
+  } catch (error) {
+    alert(error.message || "❌ Error updating vendor prices");
+  } finally {
     setIsSubmitting(false);
-  };
+  }
+};
+
 
   // ✅ Total price calculation
   const totalPrice = Object.values(vendorPrices).reduce(

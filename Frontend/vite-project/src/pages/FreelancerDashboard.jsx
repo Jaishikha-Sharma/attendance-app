@@ -130,7 +130,8 @@ const FreelancerDashboard = () => {
         )}
         <hr className="border-indigo-500" />
         <nav className="space-y-3">
-          {[{ id: "dashboard", label: "Dashboard", icon: <UserCheck /> },
+          {[
+            { id: "dashboard", label: "Dashboard", icon: <UserCheck /> },
             { id: "crm", label: "CRM", icon: <History /> },
           ].map(({ id, label, icon }) => (
             <button
@@ -265,7 +266,9 @@ const FreelancerDashboard = () => {
                           ? new Date(order.deadline).toLocaleDateString()
                           : "-"}
                       </td>
-                      <td className="p-3">₹{order.vendorAmount || 0}</td>
+                      <td className="p-3">
+                        ₹{order.vendorPrices?.[user.name] || 0}
+                      </td>
                       <td className="p-3">{order.deliveryStatus}</td>
                       <td className="p-3">{order.paymentStatus}</td>
                     </tr>
@@ -284,7 +287,9 @@ const FreelancerDashboard = () => {
             {totalPages > 1 && (
               <div className="mt-4 flex justify-center items-center gap-2">
                 <button
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
                   className="px-3 py-1 rounded border text-sm bg-white hover:bg-gray-100"
                   disabled={currentPage === 1}
                 >
@@ -358,20 +363,68 @@ const FreelancerDashboard = () => {
                     </button>
                   </div>
                   <div className="space-y-3 text-sm text-gray-700">
-                    <p><strong>Order ID:</strong> {selectedOrder?._id}</p>
-                    <p><strong>Order Date:</strong> {new Date(selectedOrder?.createdAt).toLocaleDateString()}</p>
-                    <p><strong>Customer Name:</strong> {selectedOrder?.customerName}</p>
-                    <p><strong>Project Topic:</strong> {selectedOrder?.topic || "-"}</p>
-                    <p><strong>Vendor Amount:</strong> ₹{selectedOrder?.vendorAmount || 0}</p>
-                    <p><strong>Assigned By:</strong> {selectedOrder?.assignedBy || "Coordinator"}</p>
-                    <p><strong>Delivery Status:</strong> {selectedOrder?.deliveryStatus}</p>
-                    <p><strong>Deadline:</strong> {selectedOrder?.deadline ? new Date(selectedOrder.deadline).toLocaleDateString() : "-"}</p>
+                    <p>
+                      <strong>Order ID:</strong> {selectedOrder?._id}
+                    </p>
+                    <p>
+                      <strong>Order Date:</strong>{" "}
+                      {new Date(selectedOrder?.createdAt).toLocaleDateString()}
+                    </p>
+                    <p>
+                      <strong>Customer Name:</strong>{" "}
+                      {selectedOrder?.customerName}
+                    </p>
+                    <p>
+                      <strong>Project Topic:</strong>{" "}
+                      {selectedOrder?.topic || "-"}
+                    </p>
+                    <p>
+                      <strong>Vendor Amount:</strong> ₹
+                      {selectedOrder?.vendorPrices || 0}
+                    </p>
+                    <p>
+                      <strong>Assigned By:</strong>{" "}
+                      {selectedOrder?.assignedBy || "Coordinator"}
+                    </p>
+                    <p>
+                      <strong>Delivery Status:</strong>{" "}
+                      {selectedOrder?.deliveryStatus}
+                    </p>
+                    <p>
+                      <strong>Deadline:</strong>{" "}
+                      {selectedOrder?.deadline
+                        ? new Date(selectedOrder.deadline).toLocaleDateString()
+                        : "-"}
+                    </p>
                     <hr />
-                    <p><strong>Chat Option:</strong> {selectedOrder?.chatApprovedBy?.name || "N/A"}</p>
-                    <p><strong>Invoice Generated on:</strong> {selectedOrder?.invoiceGeneratedOn ? new Date(selectedOrder.invoiceGeneratedOn).toLocaleDateString() : "N/A"}</p>
-                    <p><strong>Payment Status:</strong> {selectedOrder?.paymentStatus || "N/A"}</p>
-                    <p><strong>Customer Feedback:</strong> {selectedOrder?.customerFeedback?.trim() ? selectedOrder.customerFeedback : "N/A"}</p>
-                    <p><strong>Remarks by Management:</strong> {selectedOrder?.remarksByManagement?.trim() ? selectedOrder.remarksByManagement : "N/A"}</p>
+                    <p>
+                      <strong>Chat Option:</strong>{" "}
+                      {selectedOrder?.chatApprovedBy?.name || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Invoice Generated on:</strong>{" "}
+                      {selectedOrder?.invoiceGeneratedOn
+                        ? new Date(
+                            selectedOrder.invoiceGeneratedOn
+                          ).toLocaleDateString()
+                        : "N/A"}
+                    </p>
+                    <p>
+                      <strong>Payment Status:</strong>{" "}
+                      {selectedOrder?.paymentStatus || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Customer Feedback:</strong>{" "}
+                      {selectedOrder?.customerFeedback?.trim()
+                        ? selectedOrder.customerFeedback
+                        : "N/A"}
+                    </p>
+                    <p>
+                      <strong>Remarks by Management:</strong>{" "}
+                      {selectedOrder?.remarksByManagement?.trim()
+                        ? selectedOrder.remarksByManagement
+                        : "N/A"}
+                    </p>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

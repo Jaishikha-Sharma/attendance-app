@@ -217,12 +217,9 @@ export const updateVendorPrice = async (req, res) => {
         .json({ message: "Vendor is not assigned to this order" });
     }
 
-    // ✅ Fix: Initialize vendorPrices if undefined
-    if (!order.vendorPrices || typeof order.vendorPrices !== "object") {
-      order.vendorPrices = {};
-    }
-
-    order.vendorPrices[vendorName] = price;
+    // ✅ Use Map methods
+    order.vendorPrices.set(vendorName, price);
+    order.markModified("vendorPrices");
 
     await order.save();
 
@@ -232,4 +229,6 @@ export const updateVendorPrice = async (req, res) => {
     res.status(500).json({ message: "Failed to update vendor price" });
   }
 };
+
+
 
