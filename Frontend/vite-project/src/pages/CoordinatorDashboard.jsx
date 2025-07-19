@@ -85,10 +85,9 @@ const CoordinatorDashboard = () => {
       console.log("History fetch error:", err);
     }
   };
-
   useEffect(() => {
-    if (activeTab === "history") fetchHistory();
-  }, [activeTab]);
+    fetchHistory();
+  }, []);
 
   const handlePunchIn = async () => {
     try {
@@ -199,7 +198,6 @@ const CoordinatorDashboard = () => {
           {[
             { id: "dashboard", label: "Dashboard" },
             { id: "leave", label: "Apply Leave" },
-            { id: "history", label: "My History" },
             { id: "CRM", label: "CRM" },
           ].map((item) => (
             <button
@@ -214,7 +212,6 @@ const CoordinatorDashboard = () => {
               <span className="w-5 h-5">
                 {item.id === "dashboard" && <UserCheck />}
                 {item.id === "leave" && <CalendarCheck />}
-                {item.id === "history" && <History />}
                 {item.id === "CRM" && <Clock />}
               </span>
               {!collapsed && <span>{item.label}</span>}
@@ -236,7 +233,9 @@ const CoordinatorDashboard = () => {
         {activeTab === "dashboard" && (
           <>
             <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            {/* Punch Buttons */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               <button
                 onClick={handlePunchIn}
                 disabled={isPunchedIn}
@@ -260,13 +259,75 @@ const CoordinatorDashboard = () => {
                 <LogOut className="w-5 h-5" /> Punch Out
               </button>
             </div>
+
+            {/* Timer */}
             {isPunchedIn && (
-              <div className="flex items-center gap-2 mt-6 text-indigo-700">
+              <div className="flex items-center gap-2 mb-8 text-indigo-700">
                 <Clock className="w-5 h-5 animate-pulse" />
                 <span>Total Time:</span>
                 <span className="font-mono font-semibold">{timer}</span>
               </div>
             )}
+
+            {/* Attendance History */}
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <History className="w-6 h-6 text-indigo-500" />Attendance
+              History
+            </h2>
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white rounded-lg shadow">
+                <thead className="bg-indigo-100 text-indigo-700 text-left text-sm font-semibold">
+                  <tr>
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3">Punch In</th>
+                    <th className="px-4 py-3">Punch Out</th>
+                    <th className="px-4 py-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {history.length === 0 ? (
+                    <tr>
+                      <td colSpan="4" className="text-center py-4">
+                        No attendance records found.
+                      </td>
+                    </tr>
+                  ) : (
+                    history.map((item) => (
+                      <tr
+                        key={item._id}
+                        className="border-t text-sm hover:bg-gray-50 transition"
+                      >
+                        <td className="px-4 py-3">{item.date}</td>
+                        <td className="px-4 py-3">
+                          {item.punchInTime
+                            ? new Date(item.punchInTime).toLocaleTimeString()
+                            : "—"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {item.punchOutTime
+                            ? new Date(item.punchOutTime).toLocaleTimeString()
+                            : "—"}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              item.status === "Present"
+                                ? "bg-green-100 text-green-700"
+                                : item.status === "Leave"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            {item.status || "NA"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </>
         )}
 
@@ -298,65 +359,6 @@ const CoordinatorDashboard = () => {
                 Submit Leave Request
               </button>
             </form>
-          </>
-        )}
-
-        {activeTab === "history" && (
-          <>
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <History className="w-6 h-6 text-indigo-500" /> My Attendance
-              History
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-lg shadow">
-                <thead className="bg-indigo-100 text-indigo-700 text-left text-sm font-semibold">
-                  <tr>
-                    <th className="px-4 py-3">Date</th>
-                    <th className="px-4 py-3">Punch In</th>
-                    <th className="px-4 py-3">Punch Out</th>
-                    <th className="px-4 py-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.length === 0 ? (
-                    <tr>
-                      <td colSpan="4" className="text-center py-4">
-                        No attendance records found.
-                      </td>
-                    </tr>
-                  ) : (
-                    history.map((item) => (
-                      <tr key={item._id} className="border-t text-sm">
-                        <td className="px-4 py-2">{item.date}</td>
-                        <td className="px-4 py-2">
-                          {item.punchInTime
-                            ? new Date(item.punchInTime).toLocaleTimeString()
-                            : "—"}
-                        </td>
-                        <td className="px-4 py-2">
-                          {item.punchOutTime
-                            ? new Date(item.punchOutTime).toLocaleTimeString()
-                            : "—"}
-                        </td>
-                        <td className="px-4 py-2">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              item.status === "Present"
-                                ? "bg-green-100 text-green-700"
-                                : item.status === "Leave"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-gray-100 text-gray-600"
-                            }`}
-                          >
-                            {item.status || "NA"}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
           </>
         )}
         {activeTab === "CRM" && (
