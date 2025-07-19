@@ -8,14 +8,15 @@ import {
   Clock,
   Menu,
   History,
-  Briefcase,
   ShoppingCart,
+  BookOpenText,
 } from "lucide-react";
 import axios from "axios";
 import { ATTENDANCE_API } from "../utils/Constant";
 import { applyLeave, clearLeaveMessages } from "../redux/leaveSlice";
 import SalesCRM from "../components/SalesCRM.jsx";
 import OrderForm from "../components/OrderForm.jsx";
+import ResourcesComponent from "../components/ResourcesComponent.jsx";
 
 const SalesDashboard = () => {
   const { user, token } = useSelector((state) => state.auth);
@@ -213,7 +214,7 @@ const SalesDashboard = () => {
               activeTab === "crm" ? "bg-indigo-900" : "hover:bg-indigo-600"
             }`}
           >
-            <Briefcase className="w-5 h-5" />
+            <Clock className="w-5 h-5" />
             {!collapsed && <span>CRM</span>}
           </button>
           <button
@@ -224,6 +225,17 @@ const SalesDashboard = () => {
           >
             <ShoppingCart className="w-5 h-5" />
             {!collapsed && <span>Order Form</span>}
+          </button>
+          <button
+            onClick={() => setActiveTab("resources")}
+            className={`w-full flex items-center gap-2 px-3 py-2 rounded-md ${
+              activeTab === "resources"
+                ? "bg-indigo-900"
+                : "hover:bg-indigo-600"
+            }`}
+          >
+            <BookOpenText className="w-5 h-5" />
+            {!collapsed && <span>Resources</span>}
           </button>
         </nav>
       </div>
@@ -374,6 +386,12 @@ const SalesDashboard = () => {
           </>
         )}
 
+        {activeTab === "resources" && (
+          <>
+            <h2 className="text-2xl font-bold mb-6">Resources</h2>
+            <ResourcesComponent />
+          </>
+        )}
         {(successMessage || error || message) && (
           <div className="mt-6 text-sm font-medium text-blue-600">
             {successMessage || error || message}

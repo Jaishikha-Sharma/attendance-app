@@ -8,6 +8,7 @@ import {
   Clock,
   Menu,
   History,
+  BookOpenText,
 } from "lucide-react";
 import axios from "axios";
 import { ATTENDANCE_API } from "../utils/Constant";
@@ -17,6 +18,7 @@ import DuePaymentModal from "../components/DuePaymentModal.jsx";
 import { updateDueAmount } from "../redux/orderSlice";
 import PerformanceReview from "./PerformanceReview.jsx";
 import { fetchCoordinatorOrders } from "../redux/orderSlice";
+import ResourcesComponent from "../components/ResourcesComponent.jsx";
 
 const CoordinatorDashboard = () => {
   const { user, token } = useSelector((state) => state.auth);
@@ -206,6 +208,7 @@ const CoordinatorDashboard = () => {
             { id: "dashboard", label: "Dashboard" },
             { id: "leave", label: "Apply Leave" },
             { id: "CRM", label: "CRM" },
+            { id: "resources", label: "Resources" },
           ].map((item) => (
             <button
               key={item.id}
@@ -220,6 +223,7 @@ const CoordinatorDashboard = () => {
                 {item.id === "dashboard" && <UserCheck />}
                 {item.id === "leave" && <CalendarCheck />}
                 {item.id === "CRM" && <Clock />}
+                {item.id === "resources" && <BookOpenText />}
               </span>
               {!collapsed && <span>{item.label}</span>}
             </button>
@@ -379,6 +383,12 @@ const CoordinatorDashboard = () => {
               selectedOrder={selectedOrder}
               setSelectedOrder={setSelectedOrder}
             />
+          </>
+        )}
+        {activeTab === "resources" && (
+          <>
+            <h2 className="text-2xl font-bold mb-6">Resources</h2>
+            <ResourcesComponent />
           </>
         )}
 

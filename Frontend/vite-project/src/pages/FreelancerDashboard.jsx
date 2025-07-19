@@ -8,6 +8,7 @@ import {
   UserCheck,
   History,
   X,
+  BookOpenText,
 } from "lucide-react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
@@ -17,6 +18,7 @@ import {
   clearFreelanceMessage,
 } from "../redux/freelanceAttendanceSlice";
 import { fetchVendorOrders } from "../redux/orderSlice";
+import ResourcesComponent from "../components/ResourcesComponent";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -133,6 +135,7 @@ const FreelancerDashboard = () => {
           {[
             { id: "dashboard", label: "Dashboard", icon: <UserCheck /> },
             { id: "crm", label: "CRM", icon: <History /> },
+            { id: "resources", label: "Resources", icon: <BookOpenText /> },
           ].map(({ id, label, icon }) => (
             <button
               key={id}
@@ -310,6 +313,12 @@ const FreelancerDashboard = () => {
               </div>
             )}
           </div>
+        )}
+        {activeTab === "resources" && (
+          <>
+            <h2 className="text-2xl font-bold mb-6">Resources</h2>
+            <ResourcesComponent />
+          </>
         )}
 
         {(message || error) && (
