@@ -15,6 +15,8 @@ import { applyLeave, clearLeaveMessages } from "../redux/leaveSlice";
 import CoordinatorCrm from "../components/CoordinatorCrm.jsx";
 import DuePaymentModal from "../components/DuePaymentModal.jsx";
 import { updateDueAmount } from "../redux/orderSlice";
+import PerformanceReview from "./PerformanceReview.jsx";
+import { fetchCoordinatorOrders } from "../redux/orderSlice";
 
 const CoordinatorDashboard = () => {
   const { user, token } = useSelector((state) => state.auth);
@@ -137,6 +139,11 @@ const CoordinatorDashboard = () => {
     setLeaveReason("");
     setTimeout(() => dispatch(clearLeaveMessages()), 4000);
   };
+  useEffect(() => {
+    if (user?.role === "Project Coordinator") {
+      dispatch(fetchCoordinatorOrders());
+    }
+  }, [dispatch, user?.role]);
 
   return (
     <div className="min-h-screen flex flex-col sm:flex-row bg-gray-100">
@@ -271,8 +278,8 @@ const CoordinatorDashboard = () => {
 
             {/* Attendance History */}
             <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-              <History className="w-6 h-6 text-indigo-500" />Attendance
-              History
+              <History className="w-6 h-6 text-indigo-500" />
+              Attendance History
             </h2>
 
             <div className="overflow-x-auto">
@@ -328,6 +335,11 @@ const CoordinatorDashboard = () => {
                 </tbody>
               </table>
             </div>
+            <PerformanceReview
+              token={token}
+              activeTab={activeTab}
+              role={user?.role}
+            />
           </>
         )}
 
