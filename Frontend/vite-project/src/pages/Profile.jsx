@@ -26,6 +26,8 @@ const Profile = () => {
     empId: user?.empId || "",
     department: user?.department || "",
     contactNo: user?.contactNo || "",
+    alternateContact: user?.alternateContact || "",
+    state: user?.state || "",
     address: user?.address || "",
     dob: user?.dob ? new Date(user.dob).toISOString().split("T")[0] : "",
   });
@@ -36,6 +38,11 @@ const Profile = () => {
   };
 
   const handleUpdate = async () => {
+    if (formData.contactNo === formData.alternateContact) {
+      toast.error("Contact No and Alternate Contact must be different.");
+      return;
+    }
+
     try {
       await dispatch(updateUserProfile(formData)).unwrap();
       toast.success("Profile updated successfully!");
@@ -71,6 +78,18 @@ const Profile = () => {
     }
   };
 
+  const fields = [
+    { label: "Full Name", icon: User, key: "name" },
+    { label: "Email", icon: Mail, key: "email" },
+    { label: "Employee ID", icon: Briefcase, key: "empId" },
+    { label: "Department", icon: Building2, key: "department" },
+    { label: "Contact No", icon: ShieldCheck, key: "contactNo" },
+    { label: "Alternate Contact", icon: ShieldCheck, key: "alternateContact" },
+    { label: "State", icon: CalendarDays, key: "state" },
+    { label: "Address", icon: CalendarDays, key: "address" },
+    { label: "DOB", icon: CalendarDays, key: "dob", type: "date" },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-100 flex items-center justify-center p-6">
       <div className="bg-white shadow-2xl rounded-3xl px-10 py-12 w-full max-w-3xl border border-gray-200">
@@ -85,15 +104,7 @@ const Profile = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700 text-[15px] px-4">
-          {[
-            { label: "Name", icon: User, key: "name" },
-            { label: "Email", icon: Mail, key: "email" },
-            { label: "Employee ID", icon: Briefcase, key: "empId" },
-            { label: "Department", icon: Building2, key: "department" },
-            { label: "Contact No", icon: ShieldCheck, key: "contactNo" },
-            { label: "Address", icon: CalendarDays, key: "address" },
-            { label: "DOB", icon: CalendarDays, key: "dob", type: "date" },
-          ].map(({ label, icon: Icon, key, type = "text" }) => (
+          {fields.map(({ label, icon: Icon, key, type = "text" }) => (
             <div className="flex items-center gap-2" key={key}>
               <Icon className="w-5 h-5 text-indigo-500" />
               <span className="font-medium">{label}:</span>

@@ -60,6 +60,10 @@ export const loginUser = async (req, res) => {
         tags: user.tags,
         isOnLeave: user.isOnLeave,
         createdAt: user.timestamp,
+        contactNo: user.contactNo,
+        alternateContact: user.alternateContact,
+        address: user.address,
+        state: user.state,
       },
     });
   } catch (error) {
