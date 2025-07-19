@@ -86,8 +86,8 @@ const EmployeeDashboard = () => {
   };
 
   useEffect(() => {
-    if (activeTab === "history") fetchHistory();
-  }, [activeTab]);
+    fetchHistory();
+  }, []);
 
   const handlePunchIn = async () => {
     try {
@@ -188,9 +188,7 @@ const EmployeeDashboard = () => {
           {[
             { id: "dashboard", label: "Dashboard", icon: <UserCheck /> },
             { id: "leave", label: "Apply Leave", icon: <CalendarCheck /> },
-            { id: "history", label: "My History", icon: <History /> },
             { id: "manual", label: "Manual Punch-In", icon: <Clock /> },
-
           ].map(({ id, label, icon }) => (
             <button
               key={id}
@@ -218,12 +216,16 @@ const EmployeeDashboard = () => {
       <div className="flex-1 p-6 sm:p-10">
         {activeTab === "dashboard" && (
           <>
-            <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h2 className="text-2xl font-bold mb-6 text-indigo-800">
+              Dashboard
+            </h2>
+
+            {/* Punch Buttons */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
               <button
                 onClick={handlePunchIn}
                 disabled={isPunchedIn}
-                className={`flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-white font-semibold shadow transition-all duration-300 ${
+                className={`flex items-center justify-center gap-2 py-4 px-6 rounded-2xl font-semibold text-white shadow-md transition-all duration-300 ${
                   isPunchedIn
                     ? "bg-green-300 cursor-not-allowed"
                     : "bg-green-600 hover:bg-green-700"
@@ -235,7 +237,7 @@ const EmployeeDashboard = () => {
               <button
                 onClick={handlePunchOut}
                 disabled={!isPunchedIn}
-                className={`flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-white font-semibold shadow transition-all duration-300 ${
+                className={`flex items-center justify-center gap-2 py-4 px-6 rounded-2xl font-semibold text-white shadow-md transition-all duration-300 ${
                   !isPunchedIn
                     ? "bg-red-300 cursor-not-allowed"
                     : "bg-red-600 hover:bg-red-700"
@@ -245,13 +247,79 @@ const EmployeeDashboard = () => {
                 Punch Out
               </button>
             </div>
+
+            {/* Live Timer */}
             {isPunchedIn && (
-              <div className="flex items-center gap-2 mt-6 text-indigo-700">
+              <div className="flex items-center gap-3 text-indigo-700 bg-indigo-100 rounded-lg px-4 py-3 shadow w-fit mb-10">
                 <Clock className="w-5 h-5 animate-pulse" />
-                <span>Total Time:</span>
-                <span className="font-mono font-semibold">{timer}</span>
+                <span className="text-sm font-medium">Total Time:</span>
+                <span className="font-mono text-lg font-semibold">{timer}</span>
               </div>
             )}
+
+            {/* Attendance History */}
+            <div className="mt-6">
+              <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-indigo-800">
+                <History className="w-5 h-5 text-indigo-600" />
+                Recent Attendance History
+              </h3>
+              <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
+                <table className="min-w-full text-sm text-gray-700">
+                  <thead className="bg-indigo-50 text-indigo-700 font-semibold text-left">
+                    <tr>
+                      <th className="px-6 py-3">Date</th>
+                      <th className="px-6 py-3">Punch In</th>
+                      <th className="px-6 py-3">Punch Out</th>
+                      <th className="px-6 py-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {history.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan="4"
+                          className="text-center py-6 text-gray-500"
+                        >
+                          No attendance records found.
+                        </td>
+                      </tr>
+                    ) : (
+                      history.map((item) => (
+                        <tr
+                          key={item._id}
+                          className="border-t hover:bg-gray-50 transition"
+                        >
+                          <td className="px-6 py-3">{item.date}</td>
+                          <td className="px-6 py-3">
+                            {item.punchInTime
+                              ? new Date(item.punchInTime).toLocaleTimeString()
+                              : "—"}
+                          </td>
+                          <td className="px-6 py-3">
+                            {item.punchOutTime
+                              ? new Date(item.punchOutTime).toLocaleTimeString()
+                              : "—"}
+                          </td>
+                          <td className="px-6 py-3">
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                item.status === "Present"
+                                  ? "bg-green-100 text-green-700"
+                                  : item.status === "Leave"
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : "bg-gray-200 text-gray-700"
+                              }`}
+                            >
+                              {item.status || "NA"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </>
         )}
 
@@ -286,66 +354,7 @@ const EmployeeDashboard = () => {
           </>
         )}
 
-        {activeTab === "history" && (
-          <>
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <History className="w-6 h-6 text-indigo-500" />
-              My Attendance History
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-lg shadow">
-                <thead className="bg-indigo-100 text-indigo-700 text-left text-sm font-semibold">
-                  <tr>
-                    <th className="px-4 py-3">Date</th>
-                    <th className="px-4 py-3">Punch In</th>
-                    <th className="px-4 py-3">Punch Out</th>
-                    <th className="px-4 py-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.length === 0 ? (
-                    <tr>
-                      <td colSpan="4" className="text-center py-4">
-                        No attendance records found.
-                      </td>
-                    </tr>
-                  ) : (
-                    history.map((item) => (
-                      <tr key={item._id} className="border-t text-sm">
-                        <td className="px-4 py-2">{item.date}</td>
-                        <td className="px-4 py-2">
-                          {item.punchInTime
-                            ? new Date(item.punchInTime).toLocaleTimeString()
-                            : "—"}
-                        </td>
-                        <td className="px-4 py-2">
-                          {item.punchOutTime
-                            ? new Date(item.punchOutTime).toLocaleTimeString()
-                            : "—"}
-                        </td>
-                        <td className="px-4 py-2">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              item.status === "Present"
-                                ? "bg-green-100 text-green-700"
-                                : item.status === "Leave"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-gray-100 text-gray-600"
-                            }`}
-                          >
-                            {item.status || "NA"}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
         {activeTab === "manual" && <ManualPunchRequest />}
-
 
         {(successMessage || error || message) && (
           <div className="mt-6 text-sm font-medium text-blue-600">

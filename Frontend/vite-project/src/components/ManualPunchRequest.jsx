@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { submitManualPunchRequest } from "../redux/manualPunchSlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Clock } from "lucide-react";
 
 const ManualPunchRequest = () => {
   const dispatch = useDispatch();
@@ -48,13 +49,14 @@ const ManualPunchRequest = () => {
   }, [successMessage, error]);
 
   return (
-    <div className="mt-8">
-      <h2 className="text-xl font-semibold mb-4 text-indigo-600">
+    <div className="mt-5">
+      <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+        <Clock className="w-6 h-6 text-indigo-500" />
         Manual Punch-In Request
       </h2>
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 bg-white p-6 rounded-xl shadow max-w-md"
+        className="space-y-4 max-w-md"
       >
         <input
           type="date"
